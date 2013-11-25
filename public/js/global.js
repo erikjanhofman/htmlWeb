@@ -9,7 +9,7 @@ function SintahKlaes(_canvas, _number) {
 	init = function (_number) {
 		requestFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
 		for(var e = 0; e<_number; e++) {
-			objects.push(new Tekst(canvas.width, canvas.height));
+			objects.push(new Tekst(self, canvas.width, canvas.height));
 		}
 		prevTime = Date.now();
 		tick();
@@ -48,6 +48,9 @@ function SintahKlaes(_canvas, _number) {
 			objects[objectsLength].editSize(dx, dy);
 		}
 	}
+	this.getSize = function () {
+		return size;
+	}
 	requestFrame = function () { }
 	init(_number);
 }
@@ -65,17 +68,28 @@ function Drawable(_x, _y) {
 			}
 }
 
-function Tekst(_width, _height) {
-	var drawable = Drawable(_width*Math.random(), _height*Math.random()),
+function Tekst(_parent, _width, _height) {
+	var parent = _parent,
+		drawable = Drawable(_width*Math.random(), _height*Math.random()),
 		tekst = "sintahklaes is baas",
 		color = Util.getColor(),
 		font = Util.getFont(),
-		nextUpdate = Date.now() + Settings.COLORTIMEOUT;
+		speed = 50 + Util.getRandomNumber(Settings.MAXSPEED),
+		nextColorUpdate = Date.now() + Util.getRandomNumber(Settings.MAXCOLORTIMEOUT);
 		
 	drawable.update = function (dt) {
-		if(Date.now() >= nextUpdate) {
+		var parSize = parent.getSize();
+		
+		drawable.y += speed * dt;
+		
+		if(Date.now() >= nextColorUpdate) {
 			color = Util.getColor();
-			nextUpdate = Date.now() + Settings.COLORTIMEOUT;
+			nextColorUpdate = Date.now() + Util.getRandomNumber(Settings.MAXCOLORTIMEOUT);
+		}
+		if(drawable.y > parSize[1]) {
+			drawable.x = parSize[0]*Math.random();
+			drawable.y = 0;
+			font = Util.getFont();
 		}
 		return true;
 	}
@@ -94,14 +108,18 @@ Util = {
 	},
 	getFont: function () {
 		return Math.floor(Math.random() * 50) + "px Arial";
-	} 
+	},
+	getRandomNumber: function (_n) {
+		return Math.floor(_n * Math.random());
+	}
 }
 
 Settings = {
-	COLORTIMEOUT: 1000
+	MAXCOLORTIMEOUT: 5000,
+	MAXSPEED: 100
 }
 
-function init() {
+window.onload = function () {
 	var parent = document.getElementById("content"),
 		canvas = document.createElement("canvas"),
 		sintahklaes;
@@ -109,7 +127,7 @@ function init() {
 	canvas.width = parent.clientWidth;
 	canvas.height = parent.clientHeight
 	
-	sintahklaes = new SintahKlaes(canvas, 20);
+	sintahklaes = new SintahKlaes(canvas, 50);
 	
 	window.addEventListener("resize", function (e) { sintahklaes.editSize(parent.clientWidth, parent.clientHeight); });
 	
