@@ -84,13 +84,13 @@ function Drawable(_x, _y) {
 
 function Tekst(_parent, _width, _height) {
 	var parent = _parent,
-		drawable = Drawable(_width*Math.random(), _height*Math.random()),
 		tekst = "sintahklaes is baas",
 		color = Util.getColor(),
-		font = Util.getFont(),
+		fontSize = Util.getFontSize(),
 		speed = 50 + Util.getRandomNumber(Settings.MAXSPEED),
-		nextColorUpdate = Date.now() + Util.getRandomNumber(Settings.MAXCOLORTIMEOUT);
-		
+		nextColorUpdate = Date.now() + Util.getRandomNumber(Settings.MAXCOLORTIMEOUT),
+		drawable = Drawable((_width-fontSize*(tekst.length/2))*Math.random(), _height*Math.random());
+	
 	drawable.update = function (dt) {
 		var parSize = parent.getSize();
 		
@@ -101,15 +101,15 @@ function Tekst(_parent, _width, _height) {
 			nextColorUpdate = Date.now() + Util.getRandomNumber(Settings.MAXCOLORTIMEOUT);
 		}
 		if(drawable.y > parSize[1]) {
-			drawable.x = parSize[0]*Math.random();
+			fontSize = Util.getFontSize();
+			drawable.x = (parSize[0] - fontSize*(tekst.length/2)) * Math.random();
 			drawable.y = 0;
-			font = Util.getFont();
 		}
 		return true;
 	}
 	drawable.render = function (context) {
 		context.fillStyle = color;
-		context.font = font;
+		context.font = Util.getFont(fontSize);
 		context.fillText(tekst, drawable.x, drawable.y);
 	}
 	
@@ -120,8 +120,11 @@ Util = {
 	getColor: function () {
 		return '#'+Math.floor(Math.random()*0xffffff).toString(16);
 	},
-	getFont: function () {
-		return Math.floor(Math.random() * 50) + "px Arial";
+	getFont: function (_n) {
+		return _n + "px Arial";
+	},
+	getFontSize: function () {
+		return Math.floor(Math.random() * 50);
 	},
 	getRandomNumber: function (_n) {
 		return Math.floor(_n * Math.random());
