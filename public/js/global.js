@@ -124,7 +124,7 @@ Util = {
 		return _n + "px Arial";
 	},
 	getFontSize: function () {
-		return Math.floor(Math.random() * 50);
+		return 14 + Math.floor(Math.random() * 50);
 	},
 	getRandomNumber: function (_n) {
 		return Math.floor(_n * Math.random());
@@ -134,18 +134,19 @@ Util = {
 Settings = {
 	MAXCOLORTIMEOUT: 5000,
 	MAXSPEED: 100,
-	FPS: 30
+	FPS: 30,
+	NUMOBJECTS: 45
 }
 
 window.onload = function () {
-	var parent = document.getElementById("content"),
+	var parent = document.getElementById("background"),
 		canvas = document.createElement("canvas"),
 		sintahklaes;
 
 	canvas.width = parent.clientWidth;
 	canvas.height = parent.clientHeight
 	
-	sintahklaes = new SintahKlaes(canvas, 50);
+	sintahklaes = new SintahKlaes(canvas, Settings.NUMOBJECTS);
 	
 	window.addEventListener("resize", function (e) { sintahklaes.editSize(parent.clientWidth, parent.clientHeight); });
 	
