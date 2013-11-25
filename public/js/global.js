@@ -2,7 +2,8 @@ function SintahKlaes(_canvas, _number) {
 	var self = this,
 		canvas = _canvas,
 		context = _canvas.getContext("2d"),
-		objects = new Array();
+		objects = new Array(),
+		scale = [1, 1];
 	
 	init = function (_number) {
 		requestFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
@@ -30,6 +31,17 @@ function SintahKlaes(_canvas, _number) {
 		render();
 		requestFrame(tick);
 	}
+	this.editSize = function (_width, _height) {
+		var objectsLength = objects.length,
+			dx = _width/canvas.width,
+			dy = _height/canvas.height;
+			
+		canvas.width = _width;
+		canvas.height = _height;
+		while(objectsLength--) {
+			objects[objectsLength].editSize(dx, dy);
+		}
+	}
 	requestFrame = function () { }
 	init(_number);
 }
@@ -38,6 +50,10 @@ function Drawable(_x, _y) {
 	return {
 				x: _x,
 				y: _y,
+				editSize: function (_dx, _dy) {
+					this.x *= _dx;
+					this.y *= _dy;
+				},
 				render: function () { },
 				update: function (dt) { return false;}
 			}
@@ -83,13 +99,13 @@ function init() {
 	var parent = document.getElementById("content"),
 		canvas = document.createElement("canvas"),
 		sintahklaes;
-	//canvas.style.width = "100%";
-	//canvas.style.height = "100%";
+
 	canvas.width = parent.clientWidth;
 	canvas.height = parent.clientHeight
+	
 	sintahklaes = new SintahKlaes(canvas, 20);
-	//canvas.onResize = sintahklaes.render;
+	
+	window.addEventListener("resize", function (e) { sintahklaes.editSize(parent.clientWidth, parent.clientHeight); });
+	
 	parent.appendChild(canvas);
 }
-
-//document.onload = init;
