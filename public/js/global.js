@@ -4,14 +4,16 @@ function SintahKlaes(_canvas, _number) {
 		context = _canvas.getContext("2d"),
 		objects = new Array(),
 		size = [canvas.width, canvas.height],
-		prevTime;
+		nextRefresh,
+		lastUpdate ;
 	
 	init = function (_number) {
 		requestFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
 		for(var e = 0; e<_number; e++) {
 			objects.push(new Tekst(self, canvas.width, canvas.height));
 		}
-		prevTime = Date.now();
+		nextRefresh = Date.now() + 1000/Settings.FPS;
+		lastUpdate = Date.now();
 		tick();
 	}
 	render = function () {
@@ -30,11 +32,23 @@ function SintahKlaes(_canvas, _number) {
 		}
 	}
 	tick = function () {
-		update((Date.now()-prevTime)/1000);
+		/*update((Date.now()-prevTime)/1000);
 		render();
 		prevTime = Date.now();
+		requestFrame(tick);*/
+		var now;
+		do {
+			now = Date.now();
+			update((now-lastUpdate)/1000);
+			lastUpdate = now;
+		} while (Date.now()*2-lastUpdate < nextRefresh);
+		
+		render();
+		nextRefresh += 1000/Settings.FPS;
+		lastUpdate = Date.now();
 		requestFrame(tick);
 	}
+	
 	this.editSize = function (_width, _height) {
 		var objectsLength = objects.length,
 			dx = _width/size[0],
@@ -116,7 +130,8 @@ Util = {
 
 Settings = {
 	MAXCOLORTIMEOUT: 5000,
-	MAXSPEED: 100
+	MAXSPEED: 100,
+	FPS: 30
 }
 
 window.onload = function () {
