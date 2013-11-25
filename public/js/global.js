@@ -3,41 +3,47 @@ function SintahKlaes(_canvas, _number) {
 		canvas = _canvas,
 		context = _canvas.getContext("2d"),
 		objects = new Array(),
-		scale = [1, 1];
+		size = [canvas.width, canvas.height],
+		prevTime;
 	
 	init = function (_number) {
 		requestFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
 		for(var e = 0; e<_number; e++) {
 			objects.push(new Tekst(canvas.width, canvas.height));
 		}
+		prevTime = Date.now();
 		tick();
 	}
 	render = function () {
 		var objectsLength = objects.length;
+		context.clearRect(0, 0, size[0], size[1]);
 		while(objectsLength--) {
 			objects[objectsLength].render(context);
 		}
 	}
-	update = function (dt) {
+	update = function (_dt) {
 		var objectsLength = objects.length;
 		while(objectsLength--) {
-			if(!objects[objectsLength].update(dt)) {
+			if(!objects[objectsLength].update(_dt)) {
 				objects.splice(objectsLength, 1);
 			}
 		}
 	}
 	tick = function () {
-		update(1);
+		update((Date.now()-prevTime)/1000);
 		render();
+		prevTime = Date.now();
 		requestFrame(tick);
 	}
 	this.editSize = function (_width, _height) {
 		var objectsLength = objects.length,
-			dx = _width/canvas.width,
-			dy = _height/canvas.height;
+			dx = _width/size[0],
+			dy = _height/size[1];
 			
-		canvas.width = _width;
-		canvas.height = _height;
+		size[0] = _width;
+		size[1] = _height;
+		canvas.width = size[0];
+		canvas.height = size[1];
 		while(objectsLength--) {
 			objects[objectsLength].editSize(dx, dy);
 		}
@@ -63,17 +69,14 @@ function Tekst(_width, _height) {
 	var drawable = Drawable(_width*Math.random(), _height*Math.random()),
 		tekst = "sintahklaes is baas",
 		color = Util.getColor(),
-		font = Util.getFont();
-		
-	getColor = function () {
-		var colors = ["blue", "yellow", "red"];
-		return colors[Math.floor(Math.random * colors.length)];
-	}
-	getFont = function () {
-		return Math.floor(Math.random * 100) + "px Arial";
-	}
+		font = Util.getFont(),
+		nextUpdate = Date.now() + Settings.COLORTIMEOUT;
 		
 	drawable.update = function (dt) {
+		if(Date.now() >= nextUpdate) {
+			color = Util.getColor();
+			nextUpdate = Date.now() + Settings.COLORTIMEOUT;
+		}
 		return true;
 	}
 	drawable.render = function (context) {
@@ -87,12 +90,15 @@ function Tekst(_width, _height) {
 
 Util = {	
 	getColor: function () {
-		var colors = ["blue", "yellow", "red"];
-		return colors[Math.floor(Math.random() * colors.length)];
+		return '#'+Math.floor(Math.random()*0xffffff).toString(16);
 	},
 	getFont: function () {
 		return Math.floor(Math.random() * 50) + "px Arial";
 	} 
+}
+
+Settings = {
+	COLORTIMEOUT: 1000
 }
 
 function init() {
