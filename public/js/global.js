@@ -67,11 +67,12 @@ function Tekst(_parent, _x, _y) {
 	var parent = _parent,
 		drawable = Drawable(_x, _y),
 		tekst = "sintahklaes is baas",
-		color, fontSize, speed, nextColorUpdate;
+		color, fontSize, font, speed, nextColorUpdate;
 	
 	init = function () {
 		color = Util.getColor();
 		fontSize = Util.getFontSize();
+		font = Util.getFont();
 		speed = 0.1 + Math.random() * Settings.MAXSPEEDS['tekst'];
 		nextColorUpdate = Date.now() + Util.getRandomNumber(Settings.MAXCOLORTIMEOUT);
 	}
@@ -93,8 +94,8 @@ function Tekst(_parent, _x, _y) {
 	}
 	drawable.render = function (_context) {
 		_context.fillStyle = color;
-		_context.font = Util.getFont(fontSize);
-		_context.fillText(tekst, drawable.x * (parent.size[0] - fontSize * tekst.length / 2), drawable.y * (parent.size[1]));
+		_context.font = Util.createFont(fontSize, font);
+		_context.fillText(tekst, drawable.x * (parent.size[0] - fontSize * tekst.length / 2), drawable.y * (parent.size[1] + fontSize));
 	}
 	init();
 	return drawable;
@@ -123,8 +124,8 @@ function Images(_parent, _x, _y, _name) {
 			return true;
 		}
 		drawable.render = function (_context) {
-			var x = drawable.x * (parent.size[0] - size[0]) + size[0]/2,
-				y = drawable.y * (parent.size[1] + size[1] ) - size[1]/2;
+			var x = drawable.x * (parent.size[0] - size[0]) + size[0] / 2,
+				y = drawable.y * (parent.size[1] + size[1] ) - size[1] / 2;
 
 			_context.save();
 			_context.translate(x, y);
@@ -138,12 +139,16 @@ function Images(_parent, _x, _y, _name) {
 
 Util = {	
 	getColor: function () {
-		var color = '#'+Math.floor(Math.random()*0xffffff).toString(16);
-		color += new Array(8-color.length).join(0);
+		var color = '#' + Math.floor(Math.random() * 0xffffff).toString(16);
+		color += new Array(8 - color.length).join(0);
 		return color;
 	},
-	getFont: function (_n) {
-		return _n + "px Arial";
+	getFont: function () {
+		var fonts = ["Arial", "Georgia Italic", "Marlett", "Lucida Console"];
+		return fonts[Math.floor(Math.random() * fonts.length)];
+	},
+	createFont: function (_size, _font) {
+		return _size + "px " + _font;
 	},
 	getFontSize: function () {
 		return 14 + Math.floor(Math.random() * 50);
