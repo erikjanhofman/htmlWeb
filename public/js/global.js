@@ -40,7 +40,7 @@ function SintahKlaes(_canvas) {
 		update((now - lastUpdate)/1000);
 		lastUpdate = now;
 		render();
-		window.setTimeout(function () { requestFrame(tick); }, 1000/(Settings.FPS + (Date.now() - lastUpdate) + 10));
+		window.setTimeout(function () { requestFrame(tick); }, 1000/Settings.FPS - (Date.now() - lastUpdate) - 15);
 	}
 	
 	this.editSize = function (_width, _height) {
@@ -110,7 +110,7 @@ function Images(_parent, _x, _y, _name) {
 
 		init = function () {
 			rotation = Math.random() - 0.5;
-			speed = 0.1 + Math.random() * Settings.MAXSPEEDS[name];
+			speed = 0.2 + Math.random() * Settings.MAXSPEEDS[name];
 			image = Content.Images[name][Math.floor(Content.Images[name].length * Math.random())];
 			size = [image.width, image.height];
 		}
@@ -169,8 +169,8 @@ Settings = {
 	NUMPIETENOBJECTS: 10,
 	MAXCOLORTIMEOUT: 5000,
 	FPS: 40,
-	MAXSPEEDS: {'sint': 0.3,
-				'piet': 0.4,
+	MAXSPEEDS: {'sint': 0.2,
+				'piet': 0.3,
 				'tekst': 0.6
 	}
 }
