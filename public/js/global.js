@@ -3,22 +3,22 @@ function SintahKlaes(_canvas, _number) {
 		canvas = _canvas,
 		context = _canvas.getContext("2d"),
 		objects = new Array(),
-		size = [canvas.width, canvas.height],
-		nextRefresh,
-		lastUpdate ;
+		lastUpdate;
 	
 	init = function (_number) {
+		window.addEventListener("resize", function (e) { self.editSize(canvas.parentElement.clientWidth, canvas.parentElement.clientHeight); });
 		requestFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+
 		for(var e = 0; e<_number; e++) {
-			objects.push(new Tekst(self, canvas.width, canvas.height));
+			objects.push(new Tekst(self, Math.random(), Math.random()));
 		}
-		nextRefresh = Date.now() + 1000/Settings.FPS;
+
 		lastUpdate = Date.now();
 		tick();
 	}
 	render = function () {
 		var objectsLength = objects.length;
-		context.clearRect(0, 0, size[0], size[1]);
+		context.clearRect(0, 0, self.size[0], self.size[1]);
 		while(objectsLength--) {
 			objects[objectsLength].render(context);
 		}
@@ -32,39 +32,20 @@ function SintahKlaes(_canvas, _number) {
 		}
 	}
 	tick = function () {
-		/*update((Date.now()-prevTime)/1000);
+		var now = Date.now();
+		update((now - lastUpdate)/1000);
+		lastUpdate = now;
 		render();
-		prevTime = Date.now();
-		requestFrame(tick);*/
-		var now;
-		do {
-			now = Date.now();
-			update((now-lastUpdate)/1000);
-			lastUpdate = now;
-		} while (Date.now()*2-lastUpdate < nextRefresh);
-		
-		render();
-		nextRefresh += 1000/Settings.FPS;
-		lastUpdate = Date.now();
-		requestFrame(tick);
+		window.setTimeout(function () { requestFrame(tick); }, 1000/(Settings.FPS - Date.now() - lastUpdate));
 	}
 	
 	this.editSize = function (_width, _height) {
-		var objectsLength = objects.length,
-			dx = _width/size[0],
-			dy = _height/size[1];
-			
-		size[0] = _width;
-		size[1] = _height;
-		canvas.width = size[0];
-		canvas.height = size[1];
-		while(objectsLength--) {
-			objects[objectsLength].editSize(dx, dy);
-		}
+		this.size[0] = _width;
+		this.size[1] = _height;
+		canvas.width = this.size[0];
+		canvas.height = this.size[1];
 	}
-	this.getSize = function () {
-		return size;
-	}
+	this.size = [canvas.width, canvas.height];
 	requestFrame = function () { }
 	init(_number);
 }
@@ -73,26 +54,25 @@ function Drawable(_x, _y) {
 	return {
 				x: _x,
 				y: _y,
-				editSize: function (_dx, _dy) {
-					this.x *= _dx;
-					this.y *= _dy;
-				},
 				render: function () { },
 				update: function (dt) { return false;}
 			}
 }
 
-function Tekst(_parent, _width, _height) {
+function Tekst(_parent, _x, _y) {
 	var parent = _parent,
+		drawable = Drawable(_x, _y),
 		tekst = "sintahklaes is baas",
-		color = Util.getColor(),
-		fontSize = Util.getFontSize(),
-		speed = 50 + Util.getRandomNumber(Settings.MAXSPEED),
-		nextColorUpdate = Date.now() + Util.getRandomNumber(Settings.MAXCOLORTIMEOUT),
-		drawable = Drawable((_width-fontSize*(tekst.length/2))*Math.random(), _height*Math.random());
+		color, fontSize, speed, nextColorUpdate;
 	
+	init = function () {
+		color = Util.getColor();
+		fontSize = Util.getFontSize();
+		speed = 0.1 + Math.random() * Settings.MAXSPEED;
+		nextColorUpdate = Date.now() + Util.getRandomNumber(Settings.MAXCOLORTIMEOUT);
+	}
 	drawable.update = function (dt) {
-		var parSize = parent.getSize();
+		var parSize = parent.size;
 		
 		drawable.y += speed * dt;
 		
@@ -100,9 +80,9 @@ function Tekst(_parent, _width, _height) {
 			color = Util.getColor();
 			nextColorUpdate = Date.now() + Util.getRandomNumber(Settings.MAXCOLORTIMEOUT);
 		}
-		if(drawable.y > parSize[1]) {
+		if(drawable.y > 1) {
 			fontSize = Util.getFontSize();
-			drawable.x = (parSize[0] - fontSize*(tekst.length/2)) * Math.random();
+			drawable.x = Math.random();
 			drawable.y = 0;
 		}
 		return true;
@@ -110,15 +90,17 @@ function Tekst(_parent, _width, _height) {
 	drawable.render = function (context) {
 		context.fillStyle = color;
 		context.font = Util.getFont(fontSize);
-		context.fillText(tekst, drawable.x, drawable.y);
+		context.fillText(tekst, drawable.x * (parent.size[0] - fontSize * tekst.length / 2), drawable.y * (parent.size[1]));
 	}
-	
+	init();
 	return drawable;
 }
 
 Util = {	
 	getColor: function () {
-		return '#'+Math.floor(Math.random()*0xffffff).toString(16);
+		var color = '#'+Math.floor(Math.random()*0xffffff).toString(16);
+		color += new Array(8-color.length).join(0);
+		return color;
 	},
 	getFont: function (_n) {
 		return _n + "px Arial";
@@ -133,22 +115,28 @@ Util = {
 
 Settings = {
 	MAXCOLORTIMEOUT: 5000,
-	MAXSPEED: 100,
-	FPS: 30,
+	MAXSPEED: 0.2,
+	FPS: 40,
 	NUMOBJECTS: 45
 }
 
-window.onload = function () {
+function initBackground () {
 	var parent = document.getElementById("background"),
 		canvas = document.createElement("canvas"),
 		sintahklaes;
 
-	canvas.width = parent.clientWidth;
-	canvas.height = parent.clientHeight
-	
-	sintahklaes = new SintahKlaes(canvas, Settings.NUMOBJECTS);
-	
-	window.addEventListener("resize", function (e) { sintahklaes.editSize(parent.clientWidth, parent.clientHeight); });
-	
-	parent.appendChild(canvas);
+	if (parent !== null) {
+		canvas.width = parent.clientWidth;
+		canvas.height = parent.clientHeight
+
+		sintahklaes = new SintahKlaes(canvas, Settings.NUMOBJECTS);
+
+		parent.appendChild(canvas);
+	}
 }
+
+function init () {
+	initBackground();
+}
+
+window.onload = init;
