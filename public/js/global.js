@@ -1,15 +1,19 @@
-function SintahKlaes(_canvas, _number) {
+function SintahKlaes(_canvas) {
 	var self = this,
 		canvas = _canvas,
 		context = _canvas.getContext("2d"),
 		objects = new Array(),
 		lastUpdate;
 	
-	init = function (_number) {
+	init = function () {
 		window.addEventListener("resize", function (e) { self.editSize(canvas.parentElement.clientWidth, canvas.parentElement.clientHeight); });
 		requestFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
 
-		for(var e = 0; e<_number; e++) {
+		objects.push(new Images(self, Math.random(), Math.random(), "sint"));
+		for(var e = 0; e<Settings.NUMPIETENOBJECTS; e++) {
+			objects.push(new Images(self, Math.random(), Math.random(), "piet"));
+		}
+		for(var e = 0; e<Settings.NUMTEXTOBJECTS; e++) {
 			objects.push(new Tekst(self, Math.random(), Math.random()));
 		}
 
@@ -36,7 +40,7 @@ function SintahKlaes(_canvas, _number) {
 		update((now - lastUpdate)/1000);
 		lastUpdate = now;
 		render();
-		window.setTimeout(function () { requestFrame(tick); }, 1000/(Settings.FPS - Date.now() - lastUpdate));
+		window.setTimeout(function () { requestFrame(tick); }, 1000/(Settings.FPS + (Date.now() - lastUpdate) + 10));
 	}
 	
 	this.editSize = function (_width, _height) {
@@ -47,7 +51,7 @@ function SintahKlaes(_canvas, _number) {
 	}
 	this.size = [canvas.width, canvas.height];
 	requestFrame = function () { }
-	init(_number);
+	init();
 }
 
 function Drawable(_x, _y) {
@@ -68,13 +72,13 @@ function Tekst(_parent, _x, _y) {
 	init = function () {
 		color = Util.getColor();
 		fontSize = Util.getFontSize();
-		speed = 0.1 + Math.random() * Settings.MAXSPEED;
+		speed = 0.1 + Math.random() * Settings.MAXSPEEDS['tekst'];
 		nextColorUpdate = Date.now() + Util.getRandomNumber(Settings.MAXCOLORTIMEOUT);
 	}
-	drawable.update = function (dt) {
+	drawable.update = function (_dt) {
 		var parSize = parent.size;
 		
-		drawable.y += speed * dt;
+		drawable.y += speed * _dt;
 		
 		if(Date.now() >= nextColorUpdate) {
 			color = Util.getColor();
@@ -87,13 +91,49 @@ function Tekst(_parent, _x, _y) {
 		}
 		return true;
 	}
-	drawable.render = function (context) {
-		context.fillStyle = color;
-		context.font = Util.getFont(fontSize);
-		context.fillText(tekst, drawable.x * (parent.size[0] - fontSize * tekst.length / 2), drawable.y * (parent.size[1]));
+	drawable.render = function (_context) {
+		_context.fillStyle = color;
+		_context.font = Util.getFont(fontSize);
+		_context.fillText(tekst, drawable.x * (parent.size[0] - fontSize * tekst.length / 2), drawable.y * (parent.size[1]));
 	}
 	init();
 	return drawable;
+}
+
+function Images(_parent, _x, _y, _name) {
+	var parent = _parent,
+		drawable = Drawable(_x, _y),
+		name = _name,
+		images = {},
+		size, speed, rotation, image;
+
+		init = function () {
+			rotation = Math.random() - 0.5;
+			speed = 0.1 + Math.random() * Settings.MAXSPEEDS[name];
+			image = Content.Images[name][Math.floor(Content.Images[name].length * Math.random())];
+			size = [image.width, image.height];
+		}
+		drawable.update = function (_dt) {
+			drawable.y += speed * _dt;
+			if (drawable.y > 1) {
+				drawable.x = Math.random();
+				drawable.y = 0;
+				rotation = Math.random() - 0.5;
+			}
+			return true;
+		}
+		drawable.render = function (_context) {
+			var x = drawable.x * (parent.size[0] - size[0]) + size[0]/2,
+				y = drawable.y * (parent.size[1] + size[1] ) - size[1]/2;
+
+			_context.save();
+			_context.translate(x, y);
+			_context.rotate(rotation); 
+			_context.drawImage(image, -(size[0] / 2), -(size[1] / 2));
+			_context.restore();
+		}
+		init();
+		return drawable;
 }
 
 Util = {	
@@ -110,14 +150,29 @@ Util = {
 	},
 	getRandomNumber: function (_n) {
 		return Math.floor(_n * Math.random());
+	},
+	loadImage: function (url) {
+		var image = new Image();
+		image.src = url
+		return image;
 	}
 }
 
 Settings = {
+	NUMTEXTOBJECTS: 5,
+	NUMPIETENOBJECTS: 10,
 	MAXCOLORTIMEOUT: 5000,
-	MAXSPEED: 0.2,
 	FPS: 40,
-	NUMOBJECTS: 45
+	MAXSPEEDS: {'sint': 0.3,
+				'piet': 0.4,
+				'tekst': 0.6
+	}
+}
+
+Content = {
+	Images: {'sint': [Util.loadImage('public/images/sint.png')],
+			 'piet': [Util.loadImage('public/images/piet0.png'), Util.loadImage('public/images/piet1.png'), Util.loadImage('public/images/piet2.png'), Util.loadImage('public/images/piet3.png')]
+	}
 }
 
 function initBackground () {
@@ -129,7 +184,7 @@ function initBackground () {
 		canvas.width = parent.clientWidth;
 		canvas.height = parent.clientHeight
 
-		sintahklaes = new SintahKlaes(canvas, Settings.NUMOBJECTS);
+		new SintahKlaes(canvas);
 
 		parent.appendChild(canvas);
 	}
