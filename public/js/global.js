@@ -159,6 +159,7 @@ Util = {
 }
 
 Settings = {
+	STARTSINTAHKLAAS: true,
 	NUMTEXTOBJECTS: 5,
 	NUMPIETENOBJECTS: 10,
 	MAXCOLORTIMEOUT: 5000,
@@ -180,7 +181,7 @@ function initBackground () {
 		canvas = document.createElement("canvas"),
 		sintahklaes;
 
-	if (parent !== null) {
+	if (parent !== null && Settings.STARTSINTAHKLAAS) {
 		canvas.width = parent.clientWidth;
 		canvas.height = parent.clientHeight
 
