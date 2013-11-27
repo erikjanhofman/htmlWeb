@@ -12,9 +12,9 @@ function SintahKlaes(_canvas) {
 		music.loop = true;
 		music.play();
 
-		objects.push(new Images(self, Math.random(), Math.random(), "sint"));
+		objects.push(new Person(self, Math.random(), Math.random(), "sint"));
 		for(var e = 0; e<Settings.NUMPIETENOBJECTS; e++) {
-			objects.push(new Images(self, Math.random(), Math.random(), "piet"));
+			objects.push(new Person(self, Math.random(), Math.random(), "piet"));
 		}
 		for(var e = 0; e<Settings.NUMTEXTOBJECTS; e++) {
 			objects.push(new Tekst(self, Math.random(), Math.random()));
@@ -104,26 +104,15 @@ function Tekst(_parent, _x, _y) {
 	return drawable;
 }
 
-function Images(_parent, _x, _y, _name) {
+function Images(_parent, _image, _x, _y, _rotation) {
 	var parent = _parent,
 		drawable = Drawable(_x, _y),
-		name = _name,
-		images = {},
-		size, speed, rotation, image;
+		size = [_image.width, _image.height];
 
-		init = function () {
-			rotation = Math.random() - 0.5;
-			speed = 0.2 + Math.random() * Settings.MAXSPEEDS[name];
-			image = Content.Images[name][Math.floor(Content.Images[name].length * Math.random())];
-			size = [image.width, image.height];
-		}
+		drawable.image = _image;
+		drawable.rotation = _rotation;
+
 		drawable.update = function (_dt) {
-			drawable.y += speed * _dt;
-			if (drawable.y > 1) {
-				drawable.x = Math.random();
-				drawable.y = 0;
-				rotation = Math.random() - 0.5;
-			}
 			return true;
 		}
 		drawable.render = function (_context) {
@@ -132,12 +121,34 @@ function Images(_parent, _x, _y, _name) {
 
 			_context.save();
 			_context.translate(x, y);
-			_context.rotate(rotation); 
-			_context.drawImage(image, -(size[0] / 2), -(size[1] / 2));
+			_context.rotate(drawable.rotation); 
+			_context.drawImage(drawable.image, -(size[0] / 2), -(size[1] / 2));
 			_context.restore();
 		}
-		init();
 		return drawable;
+}
+
+function Person(_parent, _x, _y, _name) {
+	var name = _name,
+		image = Images(_parent, Content.Images[name][Math.floor(Content.Images[name].length * Math.random())], _x, _y, 0.5 * Math.random()),
+		speed = 0.2 + Math.random() * Settings.MAXSPEEDS[name],
+		timeout = Date.now() + 5000 + Math.random() * 10000;
+
+	image.update = function (_dt) {
+			image.y += speed * _dt;
+			if (name === "piet" && Date.now() >= timeout) {
+				image.image = Content.Images['skull'][0];
+				timeout = Date.now() + 5000 + Math.random() * 10000 + 500;
+				window.setTimeout(function() { image.image = Content.Images[name][Math.floor(Content.Images[name].length * Math.random())]; }, 500);
+			}
+			if (image.y > 1) {
+				image.x = Math.random();
+				image.y = 0;
+				image.rotation = Math.random() - 0.5;
+			}
+			return true;
+		}
+	return image;
 }
 
 Util = {	
@@ -183,7 +194,8 @@ Settings = {
 
 Content = {
 	Images: {'sint': [Util.loadImage('public/images/sint.png')],
-			 'piet': [Util.loadImage('public/images/piet0.png'), Util.loadImage('public/images/piet1.png'), Util.loadImage('public/images/piet2.png'), Util.loadImage('public/images/piet3.png')]
+			 'piet': [Util.loadImage('public/images/piet0.png'), Util.loadImage('public/images/piet1.png'), Util.loadImage('public/images/piet2.png'), Util.loadImage('public/images/piet3.png')],
+			 'skull': [Util.loadImage('public/images/skull.png')]
 	},
 	Audio: {'backgroundMusic': Util.loadAudio('public/audio/sinterklaasliedjes.ogg')
 	}
