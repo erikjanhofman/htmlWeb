@@ -8,6 +8,9 @@ h1 {
 
 li {
 	display: inline;
+	border-style:solid;
+	border-width:1px;
+	color:white;
 }
 
 #background {
