@@ -183,7 +183,7 @@ Content = {
 	Images: {'sint': [Util.loadImage('public/images/sint.png')],
 			 'piet': [Util.loadImage('public/images/piet0.png'), Util.loadImage('public/images/piet1.png'), Util.loadImage('public/images/piet2.png'), Util.loadImage('public/images/piet3.png')]
 	},
-	Audio: {'backgroundMusic': Util.loadAudio('public/audio/sinterklaasliedjes.mp3')
+	Audio: {'backgroundMusic': Util.loadAudio('public/audio/sinterklaasliedjes.ogg')
 	}
 }
 
