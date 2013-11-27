@@ -152,6 +152,8 @@ function Person(_parent, _x, _y, _name) {
 					image.nextImage();
 					timeout = _now + 500;
 				}else if(animationState === 2) {
+					image.x = Math.random();
+					image.y = 0;
 					image.nextImage();
 					timeout = _now + 5000 + Math.random() * 10000 + 500;
 				}
