@@ -17,7 +17,7 @@ function SintahKlaes(_canvas) {
 			objects.push(new Person(self, Math.random(), Math.random(), "piet"));
 		}
 		for(var e = 0; e<Settings.NUMTEXTOBJECTS; e++) {
-			objects.push(new Tekst(self, Math.random(), Math.random()));
+			objects.push(new Tekst(self, Math.random(), Math.random(), "sintahklaes is baas"));
 		}
 
 		lastUpdate = Date.now();
@@ -30,17 +30,17 @@ function SintahKlaes(_canvas) {
 			objects[objectsLength].render(context);
 		}
 	}
-	update = function (_dt) {
+	update = function (_dt, _now) {
 		var objectsLength = objects.length;
 		while(objectsLength--) {
-			if(!objects[objectsLength].update(_dt)) {
+			if(!objects[objectsLength].update(_dt, _now)) {
 				objects.splice(objectsLength, 1);
 			}
 		}
 	}
 	tick = function () {
 		var now = Date.now();
-		update((now - lastUpdate)/1000);
+		update((now - lastUpdate)/1000, now);
 		lastUpdate = now;
 		render();
 		window.setTimeout(function () { requestFrame(tick); }, 1);
@@ -66,10 +66,10 @@ function Drawable(_x, _y) {
 			}
 }
 
-function Tekst(_parent, _x, _y) {
+function Tekst(_parent, _x, _y, _tekst) {
 	var parent = _parent,
 		drawable = Drawable(_x, _y),
-		tekst = "sintahklaes is baas",
+		tekst = _tekst,
 		color, fontSize, font, speed, nextColorUpdate;
 	
 	init = function () {
@@ -79,14 +79,14 @@ function Tekst(_parent, _x, _y) {
 		speed = 0.1 + Math.random() * Settings.MAXSPEEDS['tekst'];
 		nextColorUpdate = Date.now() + Util.getRandomNumber(Settings.MAXCOLORTIMEOUT);
 	}
-	drawable.update = function (_dt) {
+	drawable.update = function (_dt, _now) {
 		var parSize = parent.size;
 		
 		drawable.y += speed * _dt;
 		
-		if(Date.now() >= nextColorUpdate) {
+		if(_now >= nextColorUpdate) {
 			color = Util.getColor();
-			nextColorUpdate = Date.now() + Util.getRandomNumber(Settings.MAXCOLORTIMEOUT);
+			nextColorUpdate = _now + Util.getRandomNumber(Settings.MAXCOLORTIMEOUT);
 		}
 		if(drawable.y > 1) {
 			fontSize = Util.getFontSize();
@@ -112,7 +112,7 @@ function Images(_parent, _image, _x, _y, _rotation) {
 		drawable.image = _image;
 		drawable.rotation = _rotation;
 
-		drawable.update = function (_dt) {
+		drawable.update = function (_dt, _now) {
 			return true;
 		}
 		drawable.render = function (_context) {
@@ -133,16 +133,25 @@ function Person(_parent, _x, _y, _name) {
 		image = Images(_parent, Content.Images[name][Math.floor(Content.Images[name].length * Math.random())], _x, _y, 0.5 * Math.random()),
 		speed = 0.2 + Math.random() * Settings.MAXSPEEDS[name],
 		timeout = Date.now() + 5000 + Math.random() * 10000,
-		sound = Util.loadAudio('public/audio/whipcrack.ogg');
+		sound = Util.loadAudio('public/audio/whipcrack.ogg'),
+		animationState = 0;
 
-	image.update = function (_dt) {
+	image.update = function (_dt, _now) {
 			image.y += speed * _dt;
-			if (Settings.WHIPCRACKS && name === "piet" && Date.now() >= timeout) {
-				sound.play();
-				timeout = Date.now() + 5000 + Math.random() * 10000 + 500;
-				image.image = Content.Images['skull'][0];
-				window.setTimeout(function() { image.image = Content.Images['skull'][0]; }, 1250);
-				window.setTimeout(function() { image.image = Content.Images[name][Math.floor(Content.Images[name].length * Math.random())]; }, 1750);
+			if (Settings.WHIPCRACKS && name === "piet" && _now >= timeout) {
+				if(animationState === 0) {
+					sound.play();
+					timeout = _now + 500;
+					animationState++;
+				}else if(animationState === 1) {
+					image.image = Content.Images['skull'][0];
+					timeout = _now + 500;
+					animationState++;
+				}else if(animationState === 2) {
+					image.image = Content.Images[name][Math.floor(Content.Images[name].length * Math.random())];
+					timeout = _now + 5000 + Math.random() * 10000 + 500;
+					animationState = 0;
+				}
 			}
 			if (image.y > 1) {
 				image.x = Math.random();
