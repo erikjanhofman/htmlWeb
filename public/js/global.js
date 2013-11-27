@@ -104,14 +104,18 @@ function Tekst(_parent, _x, _y, _tekst) {
 	return drawable;
 }
 
-function Images(_parent, _image, _x, _y, _rotation) {
+function Images(_parent, _images, _x, _y, _rotation) {
 	var parent = _parent,
 		drawable = Drawable(_x, _y),
-		size = [_image.width, _image.height];
+		size = [_images[0].width, _images[0].height],
+		currentImage = 0;
 
-		drawable.image = _image;
+		drawable.images = _images;
 		drawable.rotation = _rotation;
 
+		drawable.nextImage = function () {
+			currentImage = (currentImage + 1) % drawable.images.length;
+		}
 		drawable.update = function (_dt, _now) {
 			return true;
 		}
@@ -122,7 +126,7 @@ function Images(_parent, _image, _x, _y, _rotation) {
 			_context.save();
 			_context.translate(x, y);
 			_context.rotate(drawable.rotation); 
-			_context.drawImage(drawable.image, -(size[0] / 2), -(size[1] / 2));
+			_context.drawImage(drawable.images[currentImage], -(size[0] / 2), -(size[1] / 2));
 			_context.restore();
 		}
 		return drawable;
@@ -130,28 +134,28 @@ function Images(_parent, _image, _x, _y, _rotation) {
 
 function Person(_parent, _x, _y, _name) {
 	var name = _name,
-		image = Images(_parent, Content.Images[name][Math.floor(Content.Images[name].length * Math.random())], _x, _y, 0.5 * Math.random()),
+		image = Images(_parent, [Content.Images[name][Math.floor(Content.Images[name].length * Math.random())], Content.Images['skull'][0]], _x, _y, 0.5 * Math.random()),
 		speed = 0.2 + Math.random() * Settings.MAXSPEEDS[name],
 		timeout = Date.now() + 5000 + Math.random() * 10000,
 		sound = Util.loadAudio('public/audio/whipcrack.ogg'),
-		animationState = 0;
+		animationState = 0,
+		maxAnimationState = 3;
 
+	image.imageNumber = 0;
 	image.update = function (_dt, _now) {
 			image.y += speed * _dt;
 			if (Settings.WHIPCRACKS && name === "piet" && _now >= timeout) {
 				if(animationState === 0) {
 					sound.play();
 					timeout = _now + 500;
-					animationState++;
 				}else if(animationState === 1) {
-					image.image = Content.Images['skull'][0];
+					image.nextImage();
 					timeout = _now + 500;
-					animationState++;
 				}else if(animationState === 2) {
-					image.image = Content.Images[name][Math.floor(Content.Images[name].length * Math.random())];
+					image.nextImage();
 					timeout = _now + 5000 + Math.random() * 10000 + 500;
-					animationState = 0;
 				}
+				animationState = (animationState + 1) % maxAnimationState;
 			}
 			if (image.y > 1) {
 				image.x = Math.random();
