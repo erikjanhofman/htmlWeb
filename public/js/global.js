@@ -17,7 +17,7 @@ function SintahKlaes(_canvas) {
 			objects.push(new Person(self, Math.random(), Math.random(), "piet"));
 		}
 		for(var e = 0; e<Settings.NUMTEXTOBJECTS; e++) {
-			objects.push(new Tekst(self, Math.random(), Math.random(), "sintahklaes is baas"));
+			objects.push(new Tekst(self, Math.random(), Math.random(), Content.SINTAHKLAESZINNEN[Math.floor(Math.random() * Content.SINTAHKLAESZINNEN.length)]));
 		}
 
 		lastUpdate = Date.now();
@@ -210,6 +210,7 @@ Settings = {
 }
 
 Content = {
+	SINTAHKLAESZINNEN: ["Sintahklaes is baes", "Waes ist das Sintahklaes", "Sintahklaes omdat ie het waerd is", "Winter is coming"],
 	Images: {'sint': [Util.loadImage('public/images/sint.png')],
 			 'piet': [Util.loadImage('public/images/piet0.png'), Util.loadImage('public/images/piet1.png'), Util.loadImage('public/images/piet2.png'), Util.loadImage('public/images/piet3.png')],
 			 'skull': [Util.loadImage('public/images/skull.png')]
