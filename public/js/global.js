@@ -9,7 +9,7 @@ function SintahKlaes(_canvas) {
 	init = function () {
 		window.addEventListener("resize", function (e) { self.editSize(canvas.parentElement.clientWidth, canvas.parentElement.clientHeight); });
 		requestFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
-		music.autoplay = true;
+		music.loop = true;
 		music.play();
 
 		objects.push(new Images(self, Math.random(), Math.random(), "sint"));
