@@ -8,6 +8,7 @@ function SintahKlaes(_canvas) {
 	init = function () {
 		window.addEventListener("resize", function (e) { self.editSize(canvas.parentElement.clientWidth, canvas.parentElement.clientHeight); });
 		requestFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+		Content.Audio['backgroundMusic'].play();
 
 		objects.push(new Images(self, Math.random(), Math.random(), "sint"));
 		for(var e = 0; e<Settings.NUMPIETENOBJECTS; e++) {
@@ -160,6 +161,9 @@ Util = {
 		var image = new Image();
 		image.src = url
 		return image;
+	},
+	loadAudio: function (_url) {
+		return new Audio(_url);
 	}
 }
 
@@ -178,6 +182,8 @@ Settings = {
 Content = {
 	Images: {'sint': [Util.loadImage('public/images/sint.png')],
 			 'piet': [Util.loadImage('public/images/piet0.png'), Util.loadImage('public/images/piet1.png'), Util.loadImage('public/images/piet2.png'), Util.loadImage('public/images/piet3.png')]
+	},
+	Audio: {'backgroundMusic': Util.loadAudio('public/audio/sinterklaasliedjes.mp3')
 	}
 }
 
