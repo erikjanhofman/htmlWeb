@@ -132,14 +132,17 @@ function Person(_parent, _x, _y, _name) {
 	var name = _name,
 		image = Images(_parent, Content.Images[name][Math.floor(Content.Images[name].length * Math.random())], _x, _y, 0.5 * Math.random()),
 		speed = 0.2 + Math.random() * Settings.MAXSPEEDS[name],
-		timeout = Date.now() + 5000 + Math.random() * 10000;
+		timeout = Date.now() + 5000 + Math.random() * 10000,
+		sound = Util.loadAudio('public/audio/whipcrack.ogg');
 
 	image.update = function (_dt) {
 			image.y += speed * _dt;
 			if (name === "piet" && Date.now() >= timeout) {
-				image.image = Content.Images['skull'][0];
+				sound.play();
 				timeout = Date.now() + 5000 + Math.random() * 10000 + 500;
-				window.setTimeout(function() { image.image = Content.Images[name][Math.floor(Content.Images[name].length * Math.random())]; }, 500);
+				image.image = Content.Images['skull'][0];
+				window.setTimeout(function() { image.image = Content.Images['skull'][0]; }, 750);
+				window.setTimeout(function() { image.image = Content.Images[name][Math.floor(Content.Images[name].length * Math.random())]; }, 1500);
 			}
 			if (image.y > 1) {
 				image.x = Math.random();
@@ -197,7 +200,8 @@ Content = {
 			 'piet': [Util.loadImage('public/images/piet0.png'), Util.loadImage('public/images/piet1.png'), Util.loadImage('public/images/piet2.png'), Util.loadImage('public/images/piet3.png')],
 			 'skull': [Util.loadImage('public/images/skull.png')]
 	},
-	Audio: {'backgroundMusic': Util.loadAudio('public/audio/sinterklaasliedjes.ogg')
+	Audio: {'backgroundMusic': Util.loadAudio('public/audio/sinterklaasliedjes.ogg'),
+			'whipcrack': Util.loadAudio('public/audio/whipcrack.ogg')
 	}
 }
 
