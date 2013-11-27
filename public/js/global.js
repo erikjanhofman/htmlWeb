@@ -3,12 +3,14 @@ function SintahKlaes(_canvas) {
 		canvas = _canvas,
 		context = _canvas.getContext("2d"),
 		objects = new Array(),
+		music = Content.Audio['backgroundMusic'],
 		lastUpdate;
 	
 	init = function () {
 		window.addEventListener("resize", function (e) { self.editSize(canvas.parentElement.clientWidth, canvas.parentElement.clientHeight); });
 		requestFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
-		Content.Audio['backgroundMusic'].play();
+		music.autoplay = true;
+		music.play();
 
 		objects.push(new Images(self, Math.random(), Math.random(), "sint"));
 		for(var e = 0; e<Settings.NUMPIETENOBJECTS; e++) {
