@@ -40,7 +40,7 @@ function SintahKlaes(_canvas) {
 		update((now - lastUpdate)/1000);
 		lastUpdate = now;
 		render();
-		window.setTimeout(function () { requestFrame(tick); }, 1000/Settings.FPS - (Date.now() - lastUpdate) - 15);
+		window.setTimeout(function () { requestFrame(tick); }, 1);
 	}
 	
 	this.editSize = function (_width, _height) {
