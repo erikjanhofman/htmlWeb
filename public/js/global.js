@@ -132,13 +132,12 @@ function Person(_parent, _x, _y, _name) {
 	var name = _name,
 		image = Images(_parent, Content.Images[name][Math.floor(Content.Images[name].length * Math.random())], _x, _y, 0.5 * Math.random()),
 		speed = 0.2 + Math.random() * Settings.MAXSPEEDS[name],
-		useTimeout = name === "piet" && Settings.WHIPCRACKS,
 		timeout = Date.now() + 5000 + Math.random() * 10000,
 		sound = Util.loadAudio('public/audio/whipcrack.ogg');
 
 	image.update = function (_dt) {
 			image.y += speed * _dt;
-			if (useTimeout && Date.now() >= timeout) {
+			if (Settings.WHIPCRACKS && name === "piet" && Date.now() >= timeout) {
 				sound.play();
 				timeout = Date.now() + 5000 + Math.random() * 10000 + 500;
 				image.image = Content.Images['skull'][0];
