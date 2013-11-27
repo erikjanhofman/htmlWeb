@@ -2,6 +2,14 @@ body {
 	background-color: #323232;
 }
 
+h1 {
+	color: pink;	
+}
+
+li {
+	display: inline;
+}
+
 #background {
 	position: fixed;
 	left: 0;
@@ -9,10 +17,6 @@ body {
 	width: 100%;
 	height: 100%;
 	z-index: -1;
-}
-
-img {
-	opacity: 1.0;
 }
 
 #headerimage {
@@ -39,8 +43,4 @@ img {
 	background-color: #797979;
 	opacity: 0.8;
 	z-index: 0;
-}
-
-h1 {
-	color: pink;	
 }
