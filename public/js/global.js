@@ -132,17 +132,18 @@ function Person(_parent, _x, _y, _name) {
 	var name = _name,
 		image = Images(_parent, Content.Images[name][Math.floor(Content.Images[name].length * Math.random())], _x, _y, 0.5 * Math.random()),
 		speed = 0.2 + Math.random() * Settings.MAXSPEEDS[name],
+		useTimeout = name === "piet" && Settings.WHIPCRACKS,
 		timeout = Date.now() + 5000 + Math.random() * 10000,
 		sound = Util.loadAudio('public/audio/whipcrack.ogg');
 
 	image.update = function (_dt) {
 			image.y += speed * _dt;
-			if (name === "piet" && Date.now() >= timeout) {
+			if (useTimeout && Date.now() >= timeout) {
 				sound.play();
 				timeout = Date.now() + 5000 + Math.random() * 10000 + 500;
 				image.image = Content.Images['skull'][0];
-				window.setTimeout(function() { image.image = Content.Images['skull'][0]; }, 750);
-				window.setTimeout(function() { image.image = Content.Images[name][Math.floor(Content.Images[name].length * Math.random())]; }, 1500);
+				window.setTimeout(function() { image.image = Content.Images['skull'][0]; }, 1250);
+				window.setTimeout(function() { image.image = Content.Images[name][Math.floor(Content.Images[name].length * Math.random())]; }, 1750);
 			}
 			if (image.y > 1) {
 				image.x = Math.random();
@@ -184,6 +185,7 @@ Util = {
 }
 
 Settings = {
+	WHIPCRACKS: true,
 	STARTSINTAHKLAAS: true,
 	NUMTEXTOBJECTS: 5,
 	NUMPIETENOBJECTS: 10,
