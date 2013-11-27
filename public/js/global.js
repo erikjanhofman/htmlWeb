@@ -62,7 +62,7 @@ function Drawable(_x, _y) {
 				x: _x,
 				y: _y,
 				render: function () { },
-				update: function (dt) { return false;}
+				update: function () { return false; }
 			}
 }
 
@@ -141,7 +141,6 @@ function Person(_parent, _x, _y, _name) {
 		animationState = 0,
 		maxAnimationState = 3;
 
-	image.imageNumber = 0;
 	image.update = function (_dt, _now) {
 			image.y += speed * _dt;
 			if (Settings.WHIPCRACKS && name === "piet" && _now >= timeout) {
