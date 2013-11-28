@@ -17,22 +17,23 @@ function SintahKlaes(_canvas) {
 			music.play();
 		}
 
-		objects.push(new Sint(self, Math.random(), Math.random()));
-		for(var e = 0; e<Settings.NUMPIETENOBJECTS; e++) {
-			objects.push(new Piet(self, Math.random(), Math.random()));
-		}
 		for(var e = 0; e<Settings.NUMTEXTOBJECTS; e++) {
 			objects.push(new FallingTekst(self, Math.random(), Math.random()));
 		}
+		for(var e = 0; e<Settings.NUMPIETENOBJECTS; e++) {
+			objects.push(new Piet(self, Math.random(), Math.random()));
+		}
+		objects.push(new Sint(self, Math.random(), Math.random()));
 
 		lastUpdate = Date.now();
 		tick();
 	}
 	render = function () {
-		var objectsLength = objects.length;
+		var objectsLength = len = objects.length;
+		len--;
 		context.clearRect(0, 0, self.size[0], self.size[1]);
 		while(objectsLength--) {
-			objects[objectsLength].render(context);
+			objects[len - objectsLength].render(context);
 		}
 	}
 	update = function (_dt, _now) {
@@ -190,7 +191,7 @@ function Piet (_parent, _x, _y) {
 		person.y += person.speed * _dt;
 
 		if (!_cursor.usedOnce && _cursor.mousePosition.length > 0 && person.animationState === 0) {
-			if (_cursor.mousePosition[0] > (person.x * parent.size[0] - person.size[0]/2) && _cursor.mousePosition[0] < (person.x * parent.size[0] + person.size[0]/2) && _cursor.mousePosition[1] > (person.y * parent.size[1] - person.size[1]/2) && _cursor.mousePosition[1] < (person.y * parent.size[1] + person.size[1]/2)) {
+			if (Util.isBetween(_cursor.mousePosition, [person.x * parent.size[0] - person.size[0] / 2, person.y * parent.size[1] - person.size[1] / 2], person.size)) {
 				_cursor.usedOnce = true;
 				sounds[1].play();
 				person.animationState = 1;
@@ -232,18 +233,19 @@ function Cursor (_parent) {
 
 	init = function () {
 		if (Settings.WHIPCRACKS && Settings.USEDAMOUSE) {
-			document.addEventListener("mousedown", editMousePosition, false);
-			document.addEventListener("mouseup", editMousePosition, false);
+			document.addEventListener("mousedown", onDown, false);
+			document.addEventListener("mouseup", onRelease, false);
 		}
 	}
-	editMousePosition = function (_event) {
-		if (self.mousePosition.length === 0) {
-			self.mousePosition = [_event.clientX - offsets[0], _event.clientY - offsets[1]];
-		}else{
-			self.mousePosition = [];
-			self.usedOnce = false;
-			singleClick = true;
-		}
+
+	onDown = function (_event) {
+		self.mousePosition = [_event.clientX - offsets[0], _event.clientY - offsets[1]];
+	}
+
+	onRelease = function (_event) {
+		self.mousePosition = [];
+		self.usedOnce = false;
+		singleClick = true;
 	}
 
 	this.usedOnce = false
@@ -281,6 +283,9 @@ Util = {
 	},
 	loadAudio: function (_url) {
 		return new Audio(_url);
+	},
+	isBetween: function (_point, _position, _size) {
+		return _point[0] > _position[0] && _point[0] < (_position[0] + _size[0]) && _point[1] > _position[1] && _point[1] < (_position[1] + _size[1]);
 	}
 }
 
