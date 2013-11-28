@@ -22,7 +22,7 @@ function SintahKlaes(_canvas) {
 			objects.push(new Person(self, Math.random(), Math.random(), "piet"));
 		}
 		for(var e = 0; e<Settings.NUMTEXTOBJECTS; e++) {
-			objects.push(new Tekst(self, Math.random(), Math.random(), Content.SINTAHKLAESZINNEN[Math.floor(Math.random() * Content.SINTAHKLAESZINNEN.length)]));
+			objects.push(new FallingTekst(self, Math.random(), Math.random()));
 		}
 
 		lastUpdate = Date.now();
@@ -80,41 +80,46 @@ function Drawable(_x, _y) {
 
 function Tekst(_parent, _x, _y, _tekst) {
 	var parent = _parent,
-		drawable = Drawable(_x, _y),
-		tekst = _tekst,
-		color, fontSize, font, speed, nextColorUpdate;
-	
-	init = function () {
-		color = Util.getColor();
-		fontSize = Util.getFontSize();
-		font = Util.getFont();
-		speed = 0.1 + Math.random() * Settings.MAXSPEEDS['tekst'];
-		nextColorUpdate = Date.now() + Util.getRandomNumber(Settings.MAXCOLORTIMEOUT);
-	}
+		drawable = Drawable(_x, _y);
 
+	drawable.tekst = _tekst
+	drawable.color = Util.getColor();
+	drawable.fontSize = Util.getFontSize();
+	drawable.font = Util.getFont();
 	drawable.update = function (_dt, _now, _mousePress) {
-		var parSize = parent.size;
-		
-		drawable.y += speed * _dt;
-		
-		if(_now >= nextColorUpdate) {
-			color = Util.getColor();
-			nextColorUpdate = _now + Util.getRandomNumber(Settings.MAXCOLORTIMEOUT);
-		}
-		if(drawable.y > 1) {
-			fontSize = Util.getFontSize();
-			drawable.x = Math.random();
-			drawable.y = 0;
-		}
 		return true;
 	}
 	drawable.render = function (_context) {
-		_context.fillStyle = color;
-		_context.font = Util.createFont(fontSize, font);
-		_context.fillText(tekst, drawable.x * (parent.size[0] - fontSize * tekst.length / 2), drawable.y * (parent.size[1] + fontSize));
+		_context.fillStyle = drawable.color;
+		_context.font = Util.createFont(drawable.fontSize, drawable.font);
+		_context.fillText(drawable.tekst, drawable.x * (parent.size[0] - drawable.fontSize * drawable.tekst.length / 2), drawable.y * (parent.size[1] + drawable.fontSize));
 	}
-	init();
 	return drawable;
+}
+
+function FallingTekst(_parent, _x, _y) {
+	var parent = _parent,
+		tekst = Tekst(parent, _x, _y,  Content.SINTAHKLAESZINNEN[Math.floor(Math.random() * Content.SINTAHKLAESZINNEN.length)]),
+		speed = 0.1 + Math.random() * Settings.MAXSPEEDS['tekst'],
+		nextColorUpdate = Date.now() + Util.getRandomNumber(Settings.MAXCOLORTIMEOUT);
+
+	tekst.update = function (_dt, _now, _mousePress) {
+		var parSize = parent.size;
+		
+		tekst.y += speed * _dt;
+		
+		if(_now >= nextColorUpdate) {
+			tekst.color = Util.getColor();
+			nextColorUpdate = _now + Util.getRandomNumber(Settings.MAXCOLORTIMEOUT);
+		}
+		if(tekst.y > 1) {
+			tekst.fontSize = Util.getFontSize();
+			tekst.x = Math.random();
+			tekst.y = 0;
+		}
+		return true;
+	}
+	return tekst;
 }
 
 function Images(_parent, _images, _x, _y, _rotation) {
