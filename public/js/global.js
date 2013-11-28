@@ -132,6 +132,9 @@ function Images(_parent, _images, _x, _y, _rotation) {
 		drawable.nextImage = function () {
 			currentImage = (currentImage + 1) % drawable.images.length;
 		}
+		drawable.setImage = function (_n) {
+			currentImage = _n % drawable.images.length;
+		}
 		drawable.update = function (_dt, _now, _cursor) {
 			return true;
 		}
@@ -181,7 +184,7 @@ function Sint (_parent, _x, _y) {
 
 function Piet (_parent, _x, _y) {
 	var parent = _parent,
-		person = Person(_parent, _x, _y, [Content.Images['piet'][Math.floor(Math.random() * Content.Images['piet'].length)], Content.Images['skull'][0]], 0.5 * Math.random()),
+		person = Person(_parent, _x, _y, [Content.Images['piet'][Math.floor(Math.random() * Content.Images['piet'].length)], Content.Images['skull'][0], Content.Images['blood'][0]], 0.5 * Math.random()),
 		sounds = [Util.loadAudio('public/audio/whipcrack.ogg'), Util.loadAudio('public/audio/shotgun.ogg')],
 		timeout = Date.now() + 5000 + Math.random() * 10000;
 
@@ -194,7 +197,7 @@ function Piet (_parent, _x, _y) {
 			if (Util.isBetween(_cursor.mousePosition, [person.x * parent.size[0] - person.size[0] / 2, person.y * parent.size[1] - person.size[1] / 2], person.size)) {
 				_cursor.usedOnce = true;
 				sounds[1].play();
-				person.animationState = 1;
+				person.animationState = 3;
 				timeout = _now;
 			}
 		}
@@ -203,16 +206,24 @@ function Piet (_parent, _x, _y) {
 			if(person.animationState === 0) {
 				sounds[0].play();
 				timeout = _now + 500;
+				person.animationState = 1;
 			}else if(person.animationState === 1) {
 				person.nextImage();
 				timeout = _now + 500;
+				person.animationState = 2;
 			}else if(person.animationState === 2) {
+				person.speed = Math.abs(person.speed);
 				person.x = Math.random();
 				person.y = 0;
-				person.nextImage();
+				person.setImage(0);
 				timeout = _now + 5000 + Math.random() * 10000 + 500;
+				person.animationState = 0;
+			}else if(person.animationState === 3) {
+				person.speed = -person.speed;
+				person.setImage(2);
+				timeout = _now + 500;
+				person.animationState = 2;
 			}
-			person.animationState = (person.animationState + 1) % person.maxAnimationState;
 		}
 
 		if (person.y > 1) {
@@ -308,7 +319,8 @@ Content = {
 	SINTAHKLAESZINNEN: ["Sintahklaes is baes", "Waes ist Sintahklaes", "Sintahklaes omdat ie het waerd is", "Winter is coming"],
 	Images: {'sint': [Util.loadImage('public/images/sint.png')],
 			 'piet': [Util.loadImage('public/images/piet0.png'), Util.loadImage('public/images/piet1.png'), Util.loadImage('public/images/piet2.png'), Util.loadImage('public/images/piet3.png')],
-			 'skull': [Util.loadImage('public/images/skull.png')]
+			 'skull': [Util.loadImage('public/images/skull.png')],
+			 'blood': [Util.loadImage('public/images/blood.png')]
 	},
 	Audio: {'backgroundMusic': Util.loadAudio('public/audio/sinterklaasliedjes.ogg'),
 			'whipcrack': Util.loadAudio('public/audio/whipcrack.ogg'),
