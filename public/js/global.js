@@ -4,10 +4,15 @@ function SintahKlaes(_canvas) {
 		context = _canvas.getContext("2d"),
 		objects = new Array(),
 		music = Content.Audio['backgroundMusic'],
+		mousePress = [],
 		lastUpdate;
 	
 	init = function () {
 		window.addEventListener("resize", function (e) { self.editSize(canvas.parentElement.clientWidth, canvas.parentElement.clientHeight); });
+		if (Settings.STARTSINTAHKLAAS) {
+			document.addEventListener("mousedown", editMousePosition, false);
+			document.addEventListener("mouseup", editMousePosition, false);
+		}
 		requestFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
 		music.loop = true;
 		music.play();
@@ -33,7 +38,7 @@ function SintahKlaes(_canvas) {
 	update = function (_dt, _now) {
 		var objectsLength = objects.length;
 		while(objectsLength--) {
-			if(!objects[objectsLength].update(_dt, _now)) {
+			if(!objects[objectsLength].update(_dt, _now, mousePress)) {
 				objects.splice(objectsLength, 1);
 			}
 		}
@@ -44,6 +49,13 @@ function SintahKlaes(_canvas) {
 		lastUpdate = now;
 		render();
 		window.setTimeout(function () { requestFrame(tick); }, 1);
+	}
+	editMousePosition = function (_event) {
+		if (mousePress.length === 0) {
+			mousePress = [_event.clientX - canvas.offsetLeft, _event.clientY - canvas.offsetTop ]
+		}else{
+			mousePress = [];
+		}
 	}
 	
 	this.editSize = function (_width, _height) {
@@ -79,7 +91,8 @@ function Tekst(_parent, _x, _y, _tekst) {
 		speed = 0.1 + Math.random() * Settings.MAXSPEEDS['tekst'];
 		nextColorUpdate = Date.now() + Util.getRandomNumber(Settings.MAXCOLORTIMEOUT);
 	}
-	drawable.update = function (_dt, _now) {
+	
+	drawable.update = function (_dt, _now, _mousePress) {
 		var parSize = parent.size;
 		
 		drawable.y += speed * _dt;
@@ -112,11 +125,12 @@ function Images(_parent, _images, _x, _y, _rotation) {
 
 		drawable.images = _images;
 		drawable.rotation = _rotation;
+		drawable.size = size;
 
 		drawable.nextImage = function () {
 			currentImage = (currentImage + 1) % drawable.images.length;
 		}
-		drawable.update = function (_dt, _now) {
+		drawable.update = function (_dt, _now, _mousePress) {
 			return true;
 		}
 		drawable.render = function (_context) {
@@ -133,7 +147,8 @@ function Images(_parent, _images, _x, _y, _rotation) {
 }
 
 function Person(_parent, _x, _y, _name) {
-	var name = _name,
+	var parent = _parent,
+		name = _name,
 		image = Images(_parent, [Content.Images[name][Math.floor(Content.Images[name].length * Math.random())], Content.Images['skull'][0]], _x, _y, 0.5 * Math.random()),
 		speed = 0.2 + Math.random() * Settings.MAXSPEEDS[name],
 		timeout = Date.now() + 5000 + Math.random() * 10000,
@@ -141,8 +156,15 @@ function Person(_parent, _x, _y, _name) {
 		animationState = 0,
 		maxAnimationState = 3;
 
-	image.update = function (_dt, _now) {
+	image.update = function (_dt, _now, _mousePress) {
 		image.y += speed * _dt;
+
+		if (_mousePress.length > 0 && animationState === 0 && name === "piet") {
+			if (_mousePress[0] > (image.x * parent.size[0] - image.size[0]/2) && _mousePress[0] < (image.x * parent.size[0] + image.size[0]/2) && _mousePress[1] > (image.y * parent.size[1] - image.size[1]/2) && _mousePress[1] < (image.y * parent.size[1] + image.size[1]/2)) {
+				timeout = _now;
+			}
+		}
+
 		if (Settings.WHIPCRACKS && name === "piet" && _now >= timeout) {
 			if(animationState === 0) {
 				sound.play();
