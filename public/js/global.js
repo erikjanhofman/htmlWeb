@@ -9,7 +9,7 @@ function SintahKlaes(_canvas) {
 	
 	init = function () {
 		window.addEventListener("resize", function (e) { self.editSize(canvas.parentElement.clientWidth, canvas.parentElement.clientHeight); });
-		if (Settings.STARTSINTAHKLAAS) {
+		if (Settings.STARTSINTAHKLAAS && Settings.USEDAMOUSE) {
 			document.addEventListener("mousedown", editMousePosition, false);
 			document.addEventListener("mouseup", editMousePosition, false);
 		}
@@ -91,7 +91,7 @@ function Tekst(_parent, _x, _y, _tekst) {
 		speed = 0.1 + Math.random() * Settings.MAXSPEEDS['tekst'];
 		nextColorUpdate = Date.now() + Util.getRandomNumber(Settings.MAXCOLORTIMEOUT);
 	}
-	
+
 	drawable.update = function (_dt, _now, _mousePress) {
 		var parSize = parent.size;
 		
@@ -222,6 +222,7 @@ Util = {
 Settings = {
 	WHIPCRACKS: true,
 	STARTSINTAHKLAAS: true,
+	USEDAMOUSE: true,
 	NUMTEXTOBJECTS: 5,
 	NUMPIETENOBJECTS: 10,
 	MAXCOLORTIMEOUT: 5000,
