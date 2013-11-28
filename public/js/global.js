@@ -122,12 +122,12 @@ function FallingTekst(_parent, _x, _y) {
 function Images(_parent, _images, _x, _y, _rotation) {
 	var parent = _parent,
 		drawable = Drawable(_x, _y),
-		size = [_images[0].width, _images[0].height],
 		currentImage = 0;
 
 		drawable.images = _images;
 		drawable.rotation = _rotation;
-		drawable.size = size;
+		drawable.size = [_images[0].width, _images[0].height];
+		drawable.scale = [1, 1];
 
 		drawable.nextImage = function () {
 			currentImage = (currentImage + 1) % drawable.images.length;
@@ -139,13 +139,13 @@ function Images(_parent, _images, _x, _y, _rotation) {
 			return true;
 		}
 		drawable.render = function (_context) {
-			var x = drawable.x * (parent.size[0] - size[0]) + size[0] / 2,
-				y = drawable.y * (parent.size[1] + size[1] ) - size[1] / 2;
+			var x = drawable.x * (parent.size[0] - drawable.size[0]) + drawable.size[0] / 2,
+				y = drawable.y * (parent.size[1] + drawable.size[1] ) - drawable.size[1] / 2;
 
 			_context.save();
 			_context.translate(x, y);
 			_context.rotate(drawable.rotation); 
-			_context.drawImage(drawable.images[currentImage], -(size[0] / 2), -(size[1] / 2));
+			_context.drawImage(drawable.images[currentImage], -(drawable.size[0] / 2), -(drawable.size[1] / 2), drawable.size[0] * drawable.scale[0], drawable.size[1] * drawable.scale[1]);
 			_context.restore();
 		}
 		return drawable;
@@ -156,8 +156,10 @@ function Person (_parent, _x, _y, _images, _rotation) {
 		image = Images(_parent, _images, _x, _y, _rotation);
 
 	image.speed = Settings.DEFAULTSPEED;
-	image.animationState = 0;
+	image.currentAnimationState = 0;
+	image.nextAnimationState = 0;
 	image.maxAnimationState = 0;
+
 	image.update = function (_dt, _now, _cursor) {
 		return true;
 	}
@@ -190,39 +192,57 @@ function Piet (_parent, _x, _y) {
 
 	person.speed = 0.1 + Math.random() * Settings.MAXSPEEDS['piet'];
 	person.maxAnimationState = 3;
+
 	person.update = function (_dt, _now, _cursor) {
 		person.y += person.speed * _dt;
 
-		if (!_cursor.usedOnce && _cursor.mousePosition.length > 0 && person.animationState === 0) {
-			if (Util.isBetween(_cursor.mousePosition, [person.x * parent.size[0] - person.size[0] / 2, person.y * parent.size[1] - person.size[1] / 2], person.size)) {
+		if (!_cursor.usedOnce && _cursor.mousePosition.length > 0 && person.nextAnimationState === 0) {
+			if (Util.isBetween(_cursor.mousePosition, [person.x * parent.size[0] - person.size[0] / 2 * person.scale[0], person.y * parent.size[1] - person.size[1] / 2 * person.scale[1]], Util.multiplyVector(person.size, person.scale))) {
 				_cursor.usedOnce = true;
 				sounds[1].play();
-				person.animationState = 3;
+				person.nextAnimationState = 3;
 				timeout = _now;
 			}
 		}
 
+		if (person.currentAnimationState === 1) {
+			if (person.rotation >= 0) {
+				person.rotation += 1 * _dt;
+			}else{
+				person.rotation -= 1 * _dt;
+			}
+		}else if(person.currentAnimationState === 3) {
+			person.scale[0] += 1 * _dt;
+			person.scale[1] += 1 * _dt;
+		}
+
 		if (Settings.WHIPCRACKS && _now >= timeout) {
-			if(person.animationState === 0) {
+			if(person.nextAnimationState === 0) {
 				sounds[0].play();
 				timeout = _now + 500;
-				person.animationState = 1;
-			}else if(person.animationState === 1) {
+				person.currentAnimationState = person.nextAnimationState;
+				person.nextAnimationState = 1;
+			}else if(person.nextAnimationState === 1) {
+				Content.Audio['laughter'].play();
 				person.nextImage();
 				timeout = _now + 500;
-				person.animationState = 2;
-			}else if(person.animationState === 2) {
+				person.currentAnimationState = person.nextAnimationState;
+				person.nextAnimationState = 2;
+			}else if(person.nextAnimationState === 2) {
+				person.scale = [1, 1];
 				person.speed = Math.abs(person.speed);
 				person.x = Math.random();
 				person.y = 0;
 				person.setImage(0);
 				timeout = _now + 5000 + Math.random() * 10000 + 500;
-				person.animationState = 0;
-			}else if(person.animationState === 3) {
+				person.currentAnimationState = person.nextAnimationState;
+				person.nextAnimationState = 0;
+			}else if(person.nextAnimationState === 3) {
 				person.speed = -person.speed;
 				person.setImage(2);
 				timeout = _now + 500;
-				person.animationState = 2;
+				person.currentAnimationState = person.nextAnimationState;
+				person.nextAnimationState = 2;
 			}
 		}
 
@@ -261,6 +281,7 @@ function Cursor (_parent) {
 
 	this.usedOnce = false
 	this.mousePosition = [];
+
 	this.isSingleMouseClick = function () {
 		singleClick = false;
 		return !singleClick;
@@ -297,6 +318,9 @@ Util = {
 	},
 	isBetween: function (_point, _position, _size) {
 		return _point[0] > _position[0] && _point[0] < (_position[0] + _size[0]) && _point[1] > _position[1] && _point[1] < (_position[1] + _size[1]);
+	},
+	multiplyVector: function (a, b) {
+		return [a[0] * b[0], a[1] * b[1]];
 	}
 }
 
@@ -324,7 +348,8 @@ Content = {
 	},
 	Audio: {'backgroundMusic': Util.loadAudio('public/audio/sinterklaasliedjes.ogg'),
 			'whipcrack': Util.loadAudio('public/audio/whipcrack.ogg'),
-			'shotgun': Util.loadAudio('public/audio/shotgun.ogg')
+			'shotgun': Util.loadAudio('public/audio/shotgun.ogg'),
+			'laughter': Util.loadAudio('public/audio/laughter.ogg')
 	}
 }
 
