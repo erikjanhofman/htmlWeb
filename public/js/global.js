@@ -325,7 +325,7 @@ Util = {
 }
 
 Settings = {
-	BACKGROUNDMUSIC: false,
+	BACKGROUNDMUSIC: true,
 	WHIPCRACKS: true,
 	STARTSINTAHKLAAS: true,
 	USEDAMOUSE: true,
