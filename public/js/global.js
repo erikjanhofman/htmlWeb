@@ -4,22 +4,22 @@ function SintahKlaes(_canvas) {
 		context = _canvas.getContext("2d"),
 		objects = new Array(),
 		music = Content.Audio['backgroundMusic'],
-		mousePress = [],
-		lastUpdate;
+		cursor, lastUpdate;
 	
 	init = function () {
-		window.addEventListener("resize", function (e) { self.editSize(canvas.parentElement.clientWidth, canvas.parentElement.clientHeight); });
-		if (Settings.STARTSINTAHKLAAS && Settings.USEDAMOUSE) {
-			document.addEventListener("mousedown", editMousePosition, false);
-			document.addEventListener("mouseup", editMousePosition, false);
-		}
 		requestFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
-		music.loop = true;
-		music.play();
+		window.addEventListener("resize", function (e) { self.editSize(canvas.parentElement.clientWidth, canvas.parentElement.clientHeight); });
 
-		objects.push(new Person(self, Math.random(), Math.random(), "sint"));
+		cursor = new Cursor(self);
+
+		if (Settings.BACKGROUNDMUSIC) {
+			music.loop = true;
+			music.play();
+		}
+
+		objects.push(new Sint(self, Math.random(), Math.random()));
 		for(var e = 0; e<Settings.NUMPIETENOBJECTS; e++) {
-			objects.push(new Person(self, Math.random(), Math.random(), "piet"));
+			objects.push(new Piet(self, Math.random(), Math.random()));
 		}
 		for(var e = 0; e<Settings.NUMTEXTOBJECTS; e++) {
 			objects.push(new FallingTekst(self, Math.random(), Math.random()));
@@ -38,7 +38,7 @@ function SintahKlaes(_canvas) {
 	update = function (_dt, _now) {
 		var objectsLength = objects.length;
 		while(objectsLength--) {
-			if(!objects[objectsLength].update(_dt, _now, mousePress)) {
+			if(!objects[objectsLength].update(_dt, _now, cursor)) {
 				objects.splice(objectsLength, 1);
 			}
 		}
@@ -50,14 +50,10 @@ function SintahKlaes(_canvas) {
 		render();
 		window.setTimeout(function () { requestFrame(tick); }, 1);
 	}
-	editMousePosition = function (_event) {
-		if (mousePress.length === 0) {
-			mousePress = [_event.clientX - canvas.offsetLeft, _event.clientY - canvas.offsetTop ]
-		}else{
-			mousePress = [];
-		}
-	}
 	
+	this.getCanvas = function () {
+		return canvas;
+	}
 	this.editSize = function (_width, _height) {
 		this.size[0] = _width;
 		this.size[1] = _height;
@@ -86,7 +82,7 @@ function Tekst(_parent, _x, _y, _tekst) {
 	drawable.color = Util.getColor();
 	drawable.fontSize = Util.getFontSize();
 	drawable.font = Util.getFont();
-	drawable.update = function (_dt, _now, _mousePress) {
+	drawable.update = function (_dt, _now, _cursor) {
 		return true;
 	}
 	drawable.render = function (_context) {
@@ -103,7 +99,7 @@ function FallingTekst(_parent, _x, _y) {
 		speed = 0.1 + Math.random() * Settings.MAXSPEEDS['tekst'],
 		nextColorUpdate = Date.now() + Util.getRandomNumber(Settings.MAXCOLORTIMEOUT);
 
-	tekst.update = function (_dt, _now, _mousePress) {
+	tekst.update = function (_dt, _now, _cursor) {
 		var parSize = parent.size;
 		
 		tekst.y += speed * _dt;
@@ -135,7 +131,7 @@ function Images(_parent, _images, _x, _y, _rotation) {
 		drawable.nextImage = function () {
 			currentImage = (currentImage + 1) % drawable.images.length;
 		}
-		drawable.update = function (_dt, _now, _mousePress) {
+		drawable.update = function (_dt, _now, _cursor) {
 			return true;
 		}
 		drawable.render = function (_context) {
@@ -151,48 +147,112 @@ function Images(_parent, _images, _x, _y, _rotation) {
 		return drawable;
 }
 
-function Person(_parent, _x, _y, _name) {
+function Person (_parent, _x, _y, _images, _rotation) {
 	var parent = _parent,
-		name = _name,
-		image = Images(_parent, [Content.Images[name][Math.floor(Content.Images[name].length * Math.random())], Content.Images['skull'][0]], _x, _y, 0.5 * Math.random()),
-		speed = 0.2 + Math.random() * Settings.MAXSPEEDS[name],
-		timeout = Date.now() + 5000 + Math.random() * 10000,
-		sound = Util.loadAudio('public/audio/whipcrack.ogg'),
-		animationState = 0,
-		maxAnimationState = 3;
+		image = Images(_parent, _images, _x, _y, _rotation);
 
-	image.update = function (_dt, _now, _mousePress) {
-		image.y += speed * _dt;
+	image.speed = Settings.DEFAULTSPEED;
+	image.animationState = 0;
+	image.maxAnimationState = 0;
+	image.update = function (_dt, _now, _cursor) {
+		return true;
+	}
+	return image;
+}
 
-		if (_mousePress.length > 0 && animationState === 0 && name === "piet") {
-			if (_mousePress[0] > (image.x * parent.size[0] - image.size[0]/2) && _mousePress[0] < (image.x * parent.size[0] + image.size[0]/2) && _mousePress[1] > (image.y * parent.size[1] - image.size[1]/2) && _mousePress[1] < (image.y * parent.size[1] + image.size[1]/2)) {
+function Sint (_parent, _x, _y) {
+	var parent = _parent,
+		person = Person(_parent, _x, _y, [Content.Images['sint'][0]], 0.5 * Math.random());
+
+	person.update = function (_dt, _now, _cursor) {
+		person.y += person.speed * _dt;
+
+		if (person.y > 1) {
+			person.x = Math.random();
+			person.y = 0;
+			person.rotation = Math.random() - 0.5;
+		}
+		return true;
+	}
+
+	return person;
+}
+
+function Piet (_parent, _x, _y) {
+	var parent = _parent,
+		person = Person(_parent, _x, _y, [Content.Images['piet'][Math.floor(Math.random() * Content.Images['piet'].length)], Content.Images['skull'][0]], 0.5 * Math.random()),
+		sounds = [Util.loadAudio('public/audio/whipcrack.ogg'), Util.loadAudio('public/audio/shotgun.ogg')],
+		timeout = Date.now() + 5000 + Math.random() * 10000;
+
+	person.speed = 0.1 + Math.random() * Settings.MAXSPEEDS['piet'];
+	person.maxAnimationState = 3;
+	person.update = function (_dt, _now, _cursor) {
+		person.y += person.speed * _dt;
+
+		if (!_cursor.usedOnce && _cursor.mousePosition.length > 0 && person.animationState === 0) {
+			if (_cursor.mousePosition[0] > (person.x * parent.size[0] - person.size[0]/2) && _cursor.mousePosition[0] < (person.x * parent.size[0] + person.size[0]/2) && _cursor.mousePosition[1] > (person.y * parent.size[1] - person.size[1]/2) && _cursor.mousePosition[1] < (person.y * parent.size[1] + person.size[1]/2)) {
+				_cursor.usedOnce = true;
+				sounds[1].play();
+				person.animationState = 1;
 				timeout = _now;
 			}
 		}
 
-		if (Settings.WHIPCRACKS && name === "piet" && _now >= timeout) {
-			if(animationState === 0) {
-				sound.play();
+		if (Settings.WHIPCRACKS && _now >= timeout) {
+			if(person.animationState === 0) {
+				sounds[0].play();
 				timeout = _now + 500;
-			}else if(animationState === 1) {
-				image.nextImage();
+			}else if(person.animationState === 1) {
+				person.nextImage();
 				timeout = _now + 500;
-			}else if(animationState === 2) {
-				image.x = Math.random();
-				image.y = 0;
-				image.nextImage();
+			}else if(person.animationState === 2) {
+				person.x = Math.random();
+				person.y = 0;
+				person.nextImage();
 				timeout = _now + 5000 + Math.random() * 10000 + 500;
 			}
-			animationState = (animationState + 1) % maxAnimationState;
+			person.animationState = (person.animationState + 1) % person.maxAnimationState;
 		}
-		if (image.y > 1) {
-			image.x = Math.random();
-			image.y = 0;
-			image.rotation = Math.random() - 0.5;
+
+		if (person.y > 1) {
+			person.x = Math.random();
+			person.y = 0;
+			person.rotation = Math.random() - 0.5;
 		}
 		return true;
 	}
-	return image;
+	return person;
+}
+
+function Cursor (_parent) {
+	var self = this,
+		parent = _parent,
+		offsets = [parent.getCanvas().offsetLeft, parent.getCanvas().offsetTop],
+		singleClick = true;
+
+	init = function () {
+		if (Settings.WHIPCRACKS && Settings.USEDAMOUSE) {
+			document.addEventListener("mousedown", editMousePosition, false);
+			document.addEventListener("mouseup", editMousePosition, false);
+		}
+	}
+	editMousePosition = function (_event) {
+		if (self.mousePosition.length === 0) {
+			self.mousePosition = [_event.clientX - offsets[0], _event.clientY - offsets[1]];
+		}else{
+			self.mousePosition = [];
+			self.usedOnce = false;
+			singleClick = true;
+		}
+	}
+
+	this.usedOnce = false
+	this.mousePosition = [];
+	this.isSingleMouseClick = function () {
+		singleClick = false;
+		return !singleClick;
+	}
+	init();
 }
 
 Util = {	
@@ -225,6 +285,7 @@ Util = {
 }
 
 Settings = {
+	BACKGROUNDMUSIC: false,
 	WHIPCRACKS: true,
 	STARTSINTAHKLAAS: true,
 	USEDAMOUSE: true,
@@ -232,8 +293,8 @@ Settings = {
 	NUMPIETENOBJECTS: 10,
 	MAXCOLORTIMEOUT: 5000,
 	FPS: 40,
-	MAXSPEEDS: {'sint': 0.2,
-				'piet': 0.3,
+	DEFAULTSPEED: 0.3,
+	MAXSPEEDS: {'piet': 0.3,
 				'tekst': 0.6
 	}
 }
@@ -245,7 +306,8 @@ Content = {
 			 'skull': [Util.loadImage('public/images/skull.png')]
 	},
 	Audio: {'backgroundMusic': Util.loadAudio('public/audio/sinterklaasliedjes.ogg'),
-			'whipcrack': Util.loadAudio('public/audio/whipcrack.ogg')
+			'whipcrack': Util.loadAudio('public/audio/whipcrack.ogg'),
+			'shotgun': Util.loadAudio('public/audio/shotgun.ogg')
 	}
 }
 
