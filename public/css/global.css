@@ -1,5 +1,10 @@
 body {
 	background-color: #323232;
+	overflow:auto;
+	padding:700;
+}
+ul {
+	display: inline-block;
 }
 
 h1 {
@@ -8,15 +13,19 @@ h1 {
 	font-size:50px;
 }
 
-h2 {
-	color:pink;
+p {  
+    color:pink;
 	font-family:arial;
-	font-size:20px;
 	text-align:left;
-	left: 0%;
-	top: 0%;
-	width: 0%;
-	height: 0%;
+	height:30;	
+	position: absolute;
+	right: 0px;
+	border: 2px solid;
+	width:250px;
+	padding:50px;
+	border:5px solid gray;
+	margin:10px; 
+	overflow: auto;
 }
 
 h3  {
@@ -24,13 +33,12 @@ h3  {
 	font-family:arial;
 	font-size:20px;
 	text-align:right;
-}
-
-li {
-	display: inline;
-	border-style:solid;
-	border-width:2px;
-	color:white;
+	display:inline-block;
+	width:250px;
+	height: 250px;
+	color: ;
+	background-color: ;
+	border: 2px solid;
 }
 
 #background {
@@ -40,6 +48,7 @@ li {
 	width: 100%;
 	height: 100%;
 	z-index: -1;
+	overflow: scroll;
 }
 
 #headerimage {
@@ -66,4 +75,5 @@ li {
 	background-color: #797979;
 	opacity: 0.8;
 	z-index: 0;
+	overflow: auto;
 }
