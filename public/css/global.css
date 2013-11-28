@@ -3,13 +3,30 @@ body {
 }
 
 h1 {
-	color: pink;	
+	color:pink;	
+	font-family:arial;
+	font-size:50px;
+	table-layout:fixed;
+}
+
+h2 {
+	color:pink;
+	font-family:arial;
+	font-size:20px;
+	text-align:right;
+}
+
+h3  {
+	color:pink;
+	font-family:arial;
+	font-size:20px;
+	text-align:left;
 }
 
 li {
 	display: inline;
 	border-style:solid;
-	border-width:1px;
+	border-width:2px;
 	color:white;
 }
 
