@@ -6,21 +6,24 @@ h1 {
 	color:pink;	
 	font-family:arial;
 	font-size:50px;
-	table-layout:fixed;
 }
 
 h2 {
 	color:pink;
 	font-family:arial;
 	font-size:20px;
-	text-align:right;
+	text-align:left;
+	left: 0%;
+	top: 0%;
+	width: 0%;
+	height: 0%;
 }
 
 h3  {
 	color:pink;
 	font-family:arial;
 	font-size:20px;
-	text-align:left;
+	text-align:right;
 }
 
 li {
