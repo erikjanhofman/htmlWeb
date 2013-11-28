@@ -142,29 +142,29 @@ function Person(_parent, _x, _y, _name) {
 		maxAnimationState = 3;
 
 	image.update = function (_dt, _now) {
-			image.y += speed * _dt;
-			if (Settings.WHIPCRACKS && name === "piet" && _now >= timeout) {
-				if(animationState === 0) {
-					sound.play();
-					timeout = _now + 500;
-				}else if(animationState === 1) {
-					image.nextImage();
-					timeout = _now + 500;
-				}else if(animationState === 2) {
-					image.x = Math.random();
-					image.y = 0;
-					image.nextImage();
-					timeout = _now + 5000 + Math.random() * 10000 + 500;
-				}
-				animationState = (animationState + 1) % maxAnimationState;
-			}
-			if (image.y > 1) {
+		image.y += speed * _dt;
+		if (Settings.WHIPCRACKS && name === "piet" && _now >= timeout) {
+			if(animationState === 0) {
+				sound.play();
+				timeout = _now + 500;
+			}else if(animationState === 1) {
+				image.nextImage();
+				timeout = _now + 500;
+			}else if(animationState === 2) {
 				image.x = Math.random();
 				image.y = 0;
-				image.rotation = Math.random() - 0.5;
+				image.nextImage();
+				timeout = _now + 5000 + Math.random() * 10000 + 500;
 			}
-			return true;
+			animationState = (animationState + 1) % maxAnimationState;
 		}
+		if (image.y > 1) {
+			image.x = Math.random();
+			image.y = 0;
+			image.rotation = Math.random() - 0.5;
+		}
+		return true;
+	}
 	return image;
 }
 
