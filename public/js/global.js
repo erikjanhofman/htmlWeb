@@ -211,7 +211,7 @@ Settings = {
 }
 
 Content = {
-	SINTAHKLAESZINNEN: ["Sintahklaes is baes", "Waes ist das Sintahklaes", "Sintahklaes omdat ie het waerd is", "Winter is coming"],
+	SINTAHKLAESZINNEN: ["Sintahklaes is baes", "Waes ist Sintahklaes", "Sintahklaes omdat ie het waerd is", "Winter is coming"],
 	Images: {'sint': [Util.loadImage('public/images/sint.png')],
 			 'piet': [Util.loadImage('public/images/piet0.png'), Util.loadImage('public/images/piet1.png'), Util.loadImage('public/images/piet2.png'), Util.loadImage('public/images/piet3.png')],
 			 'skull': [Util.loadImage('public/images/skull.png')]
