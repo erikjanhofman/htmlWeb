@@ -52,6 +52,7 @@ function SintahKlaes(_canvas) {
 		window.setTimeout(function () { requestFrame(tick); }, 1);
 	}
 	
+	this.Messages = {'pietermannen': 0};
 	this.getCanvas = function () {
 		return canvas;
 	}
@@ -172,6 +173,17 @@ function Sint (_parent, _x, _y) {
 
 	person.update = function (_dt, _now, _cursor) {
 		person.y += person.speed * _dt;
+		person.scale[0] += parent.Messages['pietermannen'] / 2;
+		person.scale[1] += parent.Messages['pietermannen'] / 2;
+		parent.Messages['pietermannen'] = 0;
+
+		if (person.scale[0] > 1 && person.scale[1] > 1) {
+			person.scale[0] -= 0.75 * _dt;
+			person.scale[1] -= 0.75 * _dt;
+		}else if (person.scale[0] < 1 && person.scale[1] < 1) {
+			person.scale[0] = 1;
+			person.scale[1] = 1;
+		}
 
 		if (person.y > 1) {
 			person.x = Math.random();
@@ -198,6 +210,7 @@ function Piet (_parent, _x, _y) {
 
 		if (!_cursor.usedOnce && _cursor.mousePosition.length > 0 && person.nextAnimationState === 0) {
 			if (Util.isBetween(_cursor.mousePosition, [person.x * parent.size[0] - person.size[0] / 2 * person.scale[0], person.y * parent.size[1] - person.size[1] / 2 * person.scale[1]], Util.multiplyVector(person.size, person.scale))) {
+				parent.Messages['pietermannen']++;
 				_cursor.usedOnce = true;
 				sounds[1].play();
 				person.nextAnimationState = 3;
