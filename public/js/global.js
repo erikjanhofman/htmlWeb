@@ -173,7 +173,8 @@ function Person (_parent, _x, _y, _images, _rotation) {
 
 function Sint (_parent, _x, _y) {
 	var parent = _parent,
-		person = Person(_parent, _x, _y, [Content.Images['sint'][0]], 0.5 * Math.random());
+		person = Person(_parent, _x, _y, [Content.Images['sint'][0]], 0.5 * Math.random()),
+		sounds = [Content.Audio['laughter']];
 
 	person.update = function (_dt, _now, _cursor) {
 		person.y += person.speed * _dt;
@@ -190,7 +191,9 @@ function Sint (_parent, _x, _y) {
 		}
 
 		if (parent.Messages['sintlaughing']) {
-			Content.Audio['laughter'].play();
+			if (!Util.audioIsPlaying(sounds[0])) {
+				sounds[0].play();
+			}
 			parent.Messages['sintlaughing'] = false;
 		}
 
@@ -343,6 +346,9 @@ Util = {
 	},
 	multiplyVector: function (a, b) {
 		return [a[0] * b[0], a[1] * b[1]];
+	},
+	audioIsPlaying: function (_audio) {
+		return !_audio.paused && !_audio.ended && _audio.currentTime > 0;
 	}
 }
 
