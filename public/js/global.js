@@ -13,6 +13,7 @@ function SintahKlaes(_canvas) {
 		cursor = new Cursor(self);
 
 		if (Settings.BACKGROUNDMUSIC) {
+			music.volume = 0.2;
 			music.loop = true;
 			music.play();
 		}
@@ -52,7 +53,10 @@ function SintahKlaes(_canvas) {
 		window.setTimeout(function () { requestFrame(tick); }, 1);
 	}
 	
-	this.Messages = {'pietermannen': 0};
+	this.Messages = {
+		'pietermannen': 0,
+		'sintlaughing': false
+		};
 	this.getCanvas = function () {
 		return canvas;
 	}
@@ -185,6 +189,11 @@ function Sint (_parent, _x, _y) {
 			person.scale[1] = 1;
 		}
 
+		if (parent.Messages['sintlaughing']) {
+			Content.Audio['laughter'].play();
+			parent.Messages['sintlaughing'] = false;
+		}
+
 		if (person.y > 1) {
 			person.x = Math.random();
 			person.y = 0;
@@ -236,7 +245,7 @@ function Piet (_parent, _x, _y) {
 				person.currentAnimationState = person.nextAnimationState;
 				person.nextAnimationState = 1;
 			}else if(person.nextAnimationState === 1) {
-				Content.Audio['laughter'].play();
+				parent.Messages['sintlaughing'] = true;
 				person.nextImage();
 				timeout = _now + 500;
 				person.currentAnimationState = person.nextAnimationState;
