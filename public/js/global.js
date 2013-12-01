@@ -49,8 +49,8 @@ function SintahKlaes(_canvas) {
 		var now = Date.now();
 		update((now - lastUpdate)/1000, now);
 		lastUpdate = now;
-		render();
-		window.setTimeout(function () { requestFrame(tick); }, 1);
+		requestFrame(render);
+		window.setTimeout(tick, 1);
 	}
 	
 	this.Messages = {
