@@ -130,6 +130,7 @@ function Images(_parent, _images, _x, _y, _rotation) {
 		currentImage = 0;
 
 		drawable.images = _images;
+		drawable.opacity = 1;
 		drawable.rotation = _rotation;
 		drawable.size = [_images[0].width, _images[0].height];
 		drawable.scale = [1, 1];
@@ -148,6 +149,7 @@ function Images(_parent, _images, _x, _y, _rotation) {
 				y = drawable.y * (parent.size[1] + drawable.size[1] ) - drawable.size[1] / 2;
 
 			_context.save();
+			_context.globalAlpha = drawable.opacity;
 			_context.translate(x, y);
 			_context.rotate(drawable.rotation); 
 			_context.drawImage(drawable.images[currentImage], -(drawable.size[0] / 2), -(drawable.size[1] / 2), drawable.size[0] * drawable.scale[0], drawable.size[1] * drawable.scale[1]);
@@ -239,6 +241,7 @@ function Piet (_parent, _x, _y) {
 			}else{
 				person.rotation -= 1 * _dt;
 			}
+			person.opacity -= 2 * _dt;
 		}else if(person.currentAnimationState === 3) {
 			person.scale[0] += 1 * _dt;
 			person.scale[1] += 1 * _dt;
@@ -257,6 +260,7 @@ function Piet (_parent, _x, _y) {
 				person.currentAnimationState = person.nextAnimationState;
 				person.nextAnimationState = 2;
 			}else if(person.nextAnimationState === 2) {
+				person.opacity = 1;
 				person.scale = [1, 1];
 				person.speed = Math.abs(person.speed);
 				person.x = Math.random();
