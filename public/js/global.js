@@ -178,11 +178,14 @@ function Sint (_parent, _x, _y) {
 
 	person.update = function (_dt, _now, _cursor) {
 		person.y += person.speed * _dt;
-		person.scale[0] += parent.Messages['pietermannen'] / 2;
-		person.scale[1] += parent.Messages['pietermannen'] / 2;
+
+		if (Util.vectorCompare([2, 2], person.scale) && parent.Messages['pietermannen'] > 0) {
+			person.scale[0] += parent.Messages['pietermannen'] / 2;
+			person.scale[1] += parent.Messages['pietermannen'] / 2;
+		}
 		parent.Messages['pietermannen'] = 0;
 
-		if (person.scale[0] > 1 && person.scale[1] > 1) {
+		if (Util.vectorCompare(person.scale, [1, 1])) {
 			person.scale[0] -= 0.75 * _dt;
 			person.scale[1] -= 0.75 * _dt;
 		}else if (person.scale[0] < 1 && person.scale[1] < 1) {
@@ -346,6 +349,9 @@ Util = {
 	},
 	multiplyVector: function (a, b) {
 		return [a[0] * b[0], a[1] * b[1]];
+	},
+	vectorCompare: function (_vx, _vy) {
+		return _vx[0] > _vy[0] && _vx[1] > _vy[1];
 	},
 	audioIsPlaying: function (_audio) {
 		return !_audio.paused && !_audio.ended && _audio.currentTime > 0;
