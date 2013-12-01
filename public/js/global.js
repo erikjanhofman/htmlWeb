@@ -366,7 +366,7 @@ Settings = {
 	BACKGROUNDMUSIC: true,
 	WHIPCRACKS: true,
 	STARTSINTAHKLAAS: true,
-	USEDAMOUSE: true,
+	USEDAMOUSE: false, //doe maar niet muis spulz gebruiken
 	NUMTEXTOBJECTS: 5,
 	NUMPIETENOBJECTS: 10,
 	MAXCOLORTIMEOUT: 5000,
