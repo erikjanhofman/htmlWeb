@@ -30,18 +30,22 @@ h1 {
 #left_col {
    float: left;
    width: 300px;
+   border-style: ridge
 }
 p1  { 
 	color: white;
 	background-color: green;
+	
 }
 #right_col {
    float: right;
    width: 300px;
+   border-style: ridge;
 }
 p2  {
 	color: white;
 	background-color: green;
+	
 =======
 }
 p {  
