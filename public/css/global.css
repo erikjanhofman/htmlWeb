@@ -8,12 +8,13 @@ ul {
 	display: inline;
 	margin-right:200px;
 	margin: 10px;
-
 }
 
 li {
 	display: inline;
-	color: white;
+	color: pink;
+	font-family: cursive;
+	font-size: large;
 }
 
 h1 {
@@ -30,26 +31,28 @@ h1 {
 #left_col {
    float: left;
    width: 300px;
-   border-style: ridge
+   font-family: sans-serif;
 }
 p1  { 
-	color: white;
-	background-color: green;
-	
+	color: red;
+	background-color: pink;
+	font-family: sans-serif;
 }
 #right_col {
    float: right;
-   width: 300px;
-   border-style: ridge;
+   padding-top: -150px;
+   padding-right: 45px;
+   width: 250px;
+   font-family: sans-serif;
 }
 p2  {
-	color: white;
-	background-color: green;
-	
+	color: red;
+	background-color: pink;
+	font-family: sans-serif;
 =======
 }
 p {  
-    color: pink;
+	 color: pink;
 	font-family: arial;
 	text-align: left;
 	height: 30;	
@@ -93,6 +96,7 @@ h3  {
 #headerimage {
 	width: 100%;
 	height: 30%;
+	padding-right: 200px;
 }
 
 #main {
