@@ -9,10 +9,10 @@ ul {
 	margin-right:200px;
 	margin: 10px;
 =======
+}
 
 li {
 	display: inline;
->>>>>>> 9f4393b9351e6ee1174d00a45fb30b6c80b5bdc0
 }
 
 h1 {
@@ -57,10 +57,9 @@ p {
 	overflow: auto;
 >>>>>>> 9f4393b9351e6ee1174d00a45fb30b6c80b5bdc0
 }
-
+<<<<<<< HEAD
 h3  {
 	color: pink;
-<<<<<<< HEAD
 	font-family: arial;
 	font-size: 20px;
 	text-align: right;
@@ -68,14 +67,12 @@ h3  {
 	width: 250px;
 	height: 250px;
 	background-color: ;
-=======
 	font-family:arial;
 	font-size:20px;
 	text-align:right;
 	display:inline-block;
 	width:250px;
 	height: 250px;
->>>>>>> 9f4393b9351e6ee1174d00a45fb30b6c80b5bdc0
 	border: 2px solid;
 }
 
