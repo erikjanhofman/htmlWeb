@@ -5,14 +5,15 @@ body {
 }
 <<<<<<< HEAD
 ul {
-	display: table-row-group;
+	display: inline;
 	margin-right:200px;
 	margin: 10px;
-=======
+
 }
 
 li {
 	display: inline;
+	color: white;
 }
 
 h1 {
@@ -42,6 +43,7 @@ p2  {
 	color: white;
 	background-color: green;
 =======
+}
 p {  
     color: pink;
 	font-family: arial;
@@ -55,7 +57,6 @@ p {
 	border: 5px solid gray;
 	margin: 10px; 
 	overflow: auto;
->>>>>>> 9f4393b9351e6ee1174d00a45fb30b6c80b5bdc0
 }
 <<<<<<< HEAD
 h3  {
