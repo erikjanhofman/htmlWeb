@@ -1,12 +1,18 @@
 body {
 	background-color: #323232;
-	overflow:auto;
-	padding:700;
+	overflow: auto;
+	padding: 700;
 }
+<<<<<<< HEAD
 ul {
 	display: table-row-group;
 	margin-right:200px;
 	margin: 10px;
+=======
+
+li {
+	display: inline;
+>>>>>>> 9f4393b9351e6ee1174d00a45fb30b6c80b5bdc0
 }
 
 h1 {
@@ -15,6 +21,7 @@ h1 {
 	font-size: 50px;
 }
 
+<<<<<<< HEAD
 #wrap {
    width:600px;
    margin:0 auto;
@@ -34,10 +41,26 @@ p1  {
 p2  {
 	color: white;
 	background-color: green;
+=======
+p {  
+    color: pink;
+	font-family: arial;
+	text-align: left;
+	height: 30;	
+	position: absolute;
+	right: 0px;
+	border: 2px solid;
+	width: 250px;
+	padding: 50px;
+	border: 5px solid gray;
+	margin: 10px; 
+	overflow: auto;
+>>>>>>> 9f4393b9351e6ee1174d00a45fb30b6c80b5bdc0
 }
 
 h3  {
 	color: pink;
+<<<<<<< HEAD
 	font-family: arial;
 	font-size: 20px;
 	text-align: right;
@@ -45,6 +68,14 @@ h3  {
 	width: 250px;
 	height: 250px;
 	background-color: ;
+=======
+	font-family:arial;
+	font-size:20px;
+	text-align:right;
+	display:inline-block;
+	width:250px;
+	height: 250px;
+>>>>>>> 9f4393b9351e6ee1174d00a45fb30b6c80b5bdc0
 	border: 2px solid;
 }
 
@@ -55,7 +86,6 @@ h3  {
 	width: 100%;
 	height: 100%;
 	z-index: -1;
-	overflow: scroll;
 }
 
 #headerimage {
@@ -78,9 +108,7 @@ h3  {
 	top: 0%;
 	width: 50%;
 	height: 100%;
-	padding: 30px;
 	background-color: #797979;
 	opacity: 0.8;
 	z-index: 0;
-	overflow: auto;
 }

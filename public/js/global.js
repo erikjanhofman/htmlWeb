@@ -13,6 +13,7 @@ function SintahKlaes(_canvas) {
 		cursor = new Cursor(self);
 
 		if (Settings.BACKGROUNDMUSIC) {
+			music.volume = 0.2;
 			music.loop = true;
 			music.play();
 		}
@@ -48,10 +49,14 @@ function SintahKlaes(_canvas) {
 		var now = Date.now();
 		update((now - lastUpdate)/1000, now);
 		lastUpdate = now;
-		render();
-		window.setTimeout(function () { requestFrame(tick); }, 1);
+		requestFrame(render);
+		window.setTimeout(tick, 1);
 	}
 	
+	this.Messages = {
+		'pietermannen': 0,
+		'sintlaughing': false
+		};
 	this.getCanvas = function () {
 		return canvas;
 	}
@@ -125,6 +130,7 @@ function Images(_parent, _images, _x, _y, _rotation) {
 		currentImage = 0;
 
 		drawable.images = _images;
+		drawable.opacity = 1;
 		drawable.rotation = _rotation;
 		drawable.size = [_images[0].width, _images[0].height];
 		drawable.scale = [1, 1];
@@ -143,6 +149,7 @@ function Images(_parent, _images, _x, _y, _rotation) {
 				y = drawable.y * (parent.size[1] + drawable.size[1] ) - drawable.size[1] / 2;
 
 			_context.save();
+			_context.globalAlpha = drawable.opacity;
 			_context.translate(x, y);
 			_context.rotate(drawable.rotation); 
 			_context.drawImage(drawable.images[currentImage], -(drawable.size[0] / 2), -(drawable.size[1] / 2), drawable.size[0] * drawable.scale[0], drawable.size[1] * drawable.scale[1]);
@@ -168,10 +175,32 @@ function Person (_parent, _x, _y, _images, _rotation) {
 
 function Sint (_parent, _x, _y) {
 	var parent = _parent,
-		person = Person(_parent, _x, _y, [Content.Images['sint'][0]], 0.5 * Math.random());
+		person = Person(_parent, _x, _y, [Content.Images['sint'][0]], 0.5 * Math.random()),
+		sounds = [Content.Audio['laughter']];
 
 	person.update = function (_dt, _now, _cursor) {
 		person.y += person.speed * _dt;
+
+		if (Util.vectorCompare([2, 2], person.scale) && parent.Messages['pietermannen'] > 0) {
+			person.scale[0] += parent.Messages['pietermannen'] / 2;
+			person.scale[1] += parent.Messages['pietermannen'] / 2;
+		}
+		parent.Messages['pietermannen'] = 0;
+
+		if (Util.vectorCompare(person.scale, [1, 1])) {
+			person.scale[0] -= 0.75 * _dt;
+			person.scale[1] -= 0.75 * _dt;
+		}else if (person.scale[0] < 1 && person.scale[1] < 1) {
+			person.scale[0] = 1;
+			person.scale[1] = 1;
+		}
+
+		if (parent.Messages['sintlaughing']) {
+			if (!Util.audioIsPlaying(sounds[0])) {
+				sounds[0].play();
+			}
+			parent.Messages['sintlaughing'] = false;
+		}
 
 		if (person.y > 1) {
 			person.x = Math.random();
@@ -198,6 +227,7 @@ function Piet (_parent, _x, _y) {
 
 		if (!_cursor.usedOnce && _cursor.mousePosition.length > 0 && person.nextAnimationState === 0) {
 			if (Util.isBetween(_cursor.mousePosition, [person.x * parent.size[0] - person.size[0] / 2 * person.scale[0], person.y * parent.size[1] - person.size[1] / 2 * person.scale[1]], Util.multiplyVector(person.size, person.scale))) {
+				parent.Messages['pietermannen']++;
 				_cursor.usedOnce = true;
 				sounds[1].play();
 				person.nextAnimationState = 3;
@@ -211,6 +241,7 @@ function Piet (_parent, _x, _y) {
 			}else{
 				person.rotation -= 1 * _dt;
 			}
+			person.opacity -= 2 * _dt;
 		}else if(person.currentAnimationState === 3) {
 			person.scale[0] += 1 * _dt;
 			person.scale[1] += 1 * _dt;
@@ -223,12 +254,13 @@ function Piet (_parent, _x, _y) {
 				person.currentAnimationState = person.nextAnimationState;
 				person.nextAnimationState = 1;
 			}else if(person.nextAnimationState === 1) {
-				Content.Audio['laughter'].play();
+				parent.Messages['sintlaughing'] = true;
 				person.nextImage();
 				timeout = _now + 500;
 				person.currentAnimationState = person.nextAnimationState;
 				person.nextAnimationState = 2;
 			}else if(person.nextAnimationState === 2) {
+				person.opacity = 1;
 				person.scale = [1, 1];
 				person.speed = Math.abs(person.speed);
 				person.x = Math.random();
@@ -321,6 +353,12 @@ Util = {
 	},
 	multiplyVector: function (a, b) {
 		return [a[0] * b[0], a[1] * b[1]];
+	},
+	vectorCompare: function (_vx, _vy) {
+		return _vx[0] > _vy[0] && _vx[1] > _vy[1];
+	},
+	audioIsPlaying: function (_audio) {
+		return !_audio.paused && !_audio.ended && _audio.currentTime > 0;
 	}
 }
 
@@ -328,7 +366,7 @@ Settings = {
 	BACKGROUNDMUSIC: true,
 	WHIPCRACKS: true,
 	STARTSINTAHKLAAS: true,
-	USEDAMOUSE: true,
+	USEDAMOUSE: false, //doe maar niet muis spulz gebruiken
 	NUMTEXTOBJECTS: 5,
 	NUMPIETENOBJECTS: 10,
 	MAXCOLORTIMEOUT: 5000,
