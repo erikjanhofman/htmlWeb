@@ -2,14 +2,19 @@
 	<head>
 		<title>Sintahklaas is baas</title>
 		<link rel="stylesheet" type="text/css" href="public/css/global.css"></link>
-		<script type="text/javascript" src="public/js/global.js"></script>
 		<script type="text/javascript">
+			var initRequsts = [];
+
 			function init () {
-				initBackground();
+				for (var n = 0; n < initRequsts.length; n++) {
+					initRequsts[n]();
+				}
 			}
 
 			window.onload = init;
 		</script>
+		<script type="text/javascript" src="public/js/global.js"></script>
+		<script type="text/javascript" src="public/js/background.js"></script>
 	</head>
 	<body>
 		<div id="main">
@@ -19,8 +24,8 @@
 			<div id="content">
 				<div id="navbar">
 					<ul>
-						<li><a href="#">pindanoten</a></li>
-						<li><a href="#">appels</a></li>
+						<li><a href="?home">pindanoten</a></li>
+						<li><a href="?gedichten">appels</a></li>
 					</ul>
 				</div>
 				<div id="mainContent">
@@ -49,14 +54,14 @@
 									maar de Sint wil het vanavond
 									met een klein cadeautje doen.
 									<form method="post" action="">
-										<textarea name="notitieblok" cols="25" rows="10">Notitieblok van de sint</textarea><br>
+										<textarea name="comments" cols="25" rows="10">Notitieblok van de sint</textarea><br>
 										<input type="submit" value="noteer" />
 									</form>
 								</div>
 							</div>
 						</div>
 					</div>
-					<div id="gedichten" class="page_element">
+					<div id="gedichten" class="page-element">
 						blaat
 					</div>
 				</div> 

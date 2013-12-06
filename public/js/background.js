@@ -406,8 +406,4 @@ function initBackground () {
 	}
 }
 
-function init () {
-	initBackground();
-}
-
-window.onload = init;
+initRequsts.push(initBackground);
