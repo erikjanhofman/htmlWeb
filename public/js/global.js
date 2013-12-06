@@ -14,8 +14,8 @@ hashKeyNavigation = function () {
 	resetPageElements();
 	if (element !== null && element.className === "page-element") {
 		element.style.display = "inline";
-	}else if ((element = document.getElementsByClassName("page-element")).length > 0) {
-		element[0].style.display = "inline";
+	}else if ((element = document.getElementsByClassName("page-element")[0]) !== null) {
+		element.style.display = "inline";
 	}
 }
 
