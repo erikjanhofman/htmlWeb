@@ -63,8 +63,7 @@ p {
 	margin: 10px; 
 	overflow: auto;
 }
-post {
-	padding top: -170;
+post  { position: absolute;
 }
 
 h3  {
