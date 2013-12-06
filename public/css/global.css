@@ -3,7 +3,7 @@ body {
 	overflow: auto;
 	padding: 700;
 }
-<<<<<<< HEAD
+
 ul {
 	display: inline;
 	margin-right:200px;
@@ -23,49 +23,6 @@ h1 {
 	font-size: 50px;
 }
 
-<<<<<<< HEAD
-#wrap {
-   width:600px;
-   margin:0 auto;
-}
-#left_col {
-   float: left;
-   width: 300px;
-   font-family: sans-serif;
-}
-p1  { 
-	color: red;
-	background-color: pink;
-	font-family: sans-serif;
-}
-#right_col {
-   float: right;
-   padding-top: -150px;
-   padding-right: 45px;
-   width: 250px;
-   font-family: sans-serif;
-}
-p2  {
-	color: red;
-	background-color: pink;
-	font-family: sans-serif;
-=======
-}
-p {  
-	 color: pink;
-	font-family: arial;
-	text-align: left;
-	height: 30;	
-	position: absolute;
-	right: 0px;
-	border: 2px solid;
-	width: 250px;
-	padding: 50px;
-	border: 5px solid gray;
-	margin: 10px; 
-	overflow: auto;
-}
-<<<<<<< HEAD
 h3  {
 	color: pink;
 	font-family: arial;
@@ -82,6 +39,52 @@ h3  {
 	width:250px;
 	height: 250px;
 	border: 2px solid;
+}
+
+p {  
+	 color: pink;
+	font-family: arial;
+	text-align: left;
+	height: 30;	
+	position: absolute;
+	right: 0px;
+	border: 2px solid;
+	width: 250px;
+	padding: 50px;
+	border: 5px solid gray;
+	margin: 10px; 
+	overflow: auto;
+}
+
+p1 { 
+	color: red;
+	background-color: pink;
+	font-family: sans-serif;
+}
+
+p2  {
+	color: red;
+	background-color: pink;
+	font-family: sans-serif;
+}
+
+#wrap {
+   width:600px;
+   margin:0 auto;
+}
+
+#left_col {
+   float: left;
+   width: 300px;
+   font-family: sans-serif;
+}
+
+#right_col {
+   float: right;
+   padding-top: -150px;
+   padding-right: 45px;
+   width: 250px;
+   font-family: sans-serif;
 }
 
 #background {
