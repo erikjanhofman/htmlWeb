@@ -68,6 +68,10 @@ p2  {
 	font-family: sans-serif;
 }
 
+#page-element {
+	visibility: hidden;
+}
+
 #wrap {
    width:600px;
    margin:0 auto;
