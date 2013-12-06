@@ -69,7 +69,7 @@ p2  {
 }
 
 .page-element {
-	visibility: hidden;
+	display: none;
 }
 
 #wrap {

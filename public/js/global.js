@@ -3,7 +3,7 @@ resetPageElements = function () {
 		elementCount = elements.length;
 
 	while (elementCount--) {
-		elements[elementCount].style.visibility = "hidden";
+		elements[elementCount].style.display = "none";
 	}
 }
 
@@ -13,9 +13,9 @@ hashKeyNavigation = function () {
 
 	resetPageElements();
 	if (element !== null && element.className === "page-element") {
-		element.style.visibility = "visible";
+		element.style.display = "inline";
 	}else if ((element = document.getElementsByClassName("page-element")).length > 0) {
-		element[0].style.visibility = "visible";
+		element[0].style.display = "inline";
 	}
 }
 
