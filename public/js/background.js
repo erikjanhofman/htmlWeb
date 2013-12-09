@@ -363,8 +363,8 @@ Util = {
 }
 
 Settings = {
-	BACKGROUNDMUSIC: false,
-	WHIPCRACKS: false,
+	BACKGROUNDMUSIC: true,
+	WHIPCRACKS: true,
 	STARTSINTAHKLAAS: true,
 	USEDAMOUSE: false, //doe maar niet muis spulz gebruiken
 	NUMTEXTOBJECTS: 5,
